@@ -1,0 +1,7 @@
+{
+"publish_emails": [
+		{% for publish_email in publish_emails %}
+		{"id":{{publish_email.id}}, "publish_id":{{publish_email.publish.id}}, "email":"{{publish_email.email}}", "sharedCode":{{publish_email.sharedCode}}}{% if not forloop.last %},{% endif %}
+		{% endfor %}
+     ]
+}

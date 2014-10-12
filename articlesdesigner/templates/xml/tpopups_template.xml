@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<tpopups>
+	{% for popup in popups %}
+	<tpopup>
+		<name>{{popup.name}}</name>
+		<title>{{popup.title}}</title>
+		<description><![CDATA[{{popup.description}}]]></description>
+		<buttons>
+		{{popup.get_onclick|safe}}
+		</buttons>
+	</tpopup>
+		{% endfor %}
+</tpopups>

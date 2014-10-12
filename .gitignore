@@ -1,0 +1,7 @@
+articlesdesigner/media/export
+articlesdesigner/media/upload
+articlesdesigner/media/zip
+*.doc
+*.tmp
+*.pyc
+*.pyo

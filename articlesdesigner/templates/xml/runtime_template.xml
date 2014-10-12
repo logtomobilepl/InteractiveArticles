@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<runtime orientation="{{mode}}">
+    <run_xml>{{start_screen_file}}</run_xml>
+</runtime>

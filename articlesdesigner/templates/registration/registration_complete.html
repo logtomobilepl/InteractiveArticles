@@ -1,0 +1,42 @@
+{% extends "registration/myregistration5_base.html" %}
+{% load url from future %}
+{% load i18n %}
+
+{% block masthead %}
+<h2>{% trans "Activation failure" %}</h2>
+{% endblock %}
+
+{% block content %}
+
+<title>Register</title>
+<script>
+    $(function(){
+    });
+</script>
+</head>
+<body>
+
+
+    <div id="login">
+        <div class="section">
+            <form method="post" action="."  style="padding: 16px;">
+                {% csrf_token %}
+                <p class="section_title">Registration complete</p>
+				<div class="separate_space"></div> 
+				Thank you for your registration!
+				<div class="separate_space"></div> 
+				You will receive an email with an activation link shortly.<br />
+                <div class="separate_space"></div>   
+				
+					<img src="/articlesdesigner/media/img/settings/arrow_blue_left.png"> <a href="/articlesdesigner/" class="blue">Back to login page</a>
+								
+            </form>
+        </div>        
+    
+    </div>
+
+{% endblock %}
+
+
+
+

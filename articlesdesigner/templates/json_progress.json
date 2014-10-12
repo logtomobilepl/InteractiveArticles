@@ -1,0 +1,5 @@
+{
+"progress": [
+        {"lessons":{{lessons}}, "points":{{points}}, "concepts":{{concepts}}}
+     ]
+}

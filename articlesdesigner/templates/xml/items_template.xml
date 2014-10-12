@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items>
+	{% for item in items %}
+	<item>
+		<name>{{item.name}}</name>
+		<thumbnail>{{item.thumbnail}}</thumbnail>
+		<bigsize_image>{{item.bigsize_image}}</bigsize_image>
+		<description>{{item.description}}</description>
+	</item>{% endfor %}
+</items>

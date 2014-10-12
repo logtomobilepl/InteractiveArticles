@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<conversations>
+	{% for conversation in conversations %}
+	<conversation>
+		<name>{{conversation.name}}</name>
+		<sound>{{conversation.sound}}</sound>
+		<file_name>{{conversation.name}}.html</file_name>
+		<actions_on_finish>{{conversation.get_onclick|safe}}</actions_on_finish>
+	</conversation>
+	{% endfor %}
+</conversations>

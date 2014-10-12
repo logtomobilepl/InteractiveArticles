@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>LegoMindstorm - WebPanel</title>
+{% load i18n %}
+<link href='http://fonts.googleapis.com/css?family=Rokkitt:400,700'	rel='stylesheet' type='text/css'>
+<link href='/media/css/style.css'	rel='stylesheet' type='text/css'>
+<link href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" media="all" rel="stylesheet" type="text/css" />
+{% block bhead %} {% endblock %}
+<script type="text/JavaScript">
+var isLoaded = false;
+</script>
+<script type="text/JavaScript" src="/media/js/jquery-ui/jquery-1.9.1.js"></script>
+<script type="text/JavaScript" src="/media/js/jquery-ui/ui/jquery-ui.js"></script>
+{% block head %}{% endblock %}
+</head>
+<body>
+
+	<div id="header">
+		{% if user.is_authenticated %}
+		Welcome, {{user.username}} | <a href="/accounts/logout" title="">Logout</a>
+		{% else %}
+		<a href="/accounts/login">Login</a> or <a href="/accounts/register">Register</a>
+		{% endif %}
+	</div>
+
+	<div id="content">{% block content %} {% endblock %}</div>
+
+	<div id="menu">
+		<p>Menu here</p>
+	</div>
+
+	<div id="footer">
+		<p>Footer here</p>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<board background="{{board.background}}" id="{{board.id}}" panel_items="{{board.panel_items}}" sound="{{board.sound}}">
+	<configuration>
+		<title>{{screen.title}}</title>
+		{% if screen.swipegroup %}<swipegroup>{{screen.swipegroup}}</swipegroup>{% endif %}
+	</configuration>
+	{% for text in texts %}
+	<show_text>
+		<x_pos>{{text.x_pos|floatformat:"0"}}</x_pos>
+		<y_pos>{{text.y_pos|floatformat:"0"}}</y_pos>
+		<width>{{text.width}}</width>
+		<height>{{text.height}}</height>
+		<font_type>{{text.font_type}}</font_type>
+		<font_size>{{text.font_size}}</font_size>
+		<text_color>{{text.text_color}}</text_color>
+		<visible>{{text.visible}}</visible>
+		<text><![CDATA[{{text.text}}]]></text>
+	</show_text>
+	{% endfor %}{% for clickable in areas %}
+	<clickable_area id="{{clickable.name}}">
+		<visible>{{clickable.visible}}</visible>
+		<file_name>{{clickable.file_name}}</file_name>
+		<area_size x="{{clickable.x}}" y="{{clickable.y}}" height="{{clickable.height}}" width="{{clickable.width}}" />
+		{{clickable.get_onclick|safe}}
+	</clickable_area>
+	{% endfor %}{% for button in buttons %}
+	<show_button>
+		<name>{{button.name}}</name>
+		<visible>{{button.visible}}</visible>
+		<title_label>{{button.title_label}}</title_label>
+		<reversesTitleShadowWhenHighlighted>1</reversesTitleShadowWhenHighlighted>
+		<title_color>{{button.title_color}}</title_color>
+		<background_image>{% if button.background_image %}{{button.background_image}}{% endif %}</background_image>
+		<pressed_image>{% if button.background_image %}{{button.background_image}}{% endif %}</pressed_image>
+		<x_pos>{{button.x_pos|floatformat:"0"}}</x_pos>
+		<y_pos>{{button.y_pos|floatformat:"0"}}</y_pos>
+		{{button.get_onclick|safe}}
+	</show_button>
+	{% endfor %}{% for html in htmls %}
+	<render_html>
+		<name>{{html.name}}</name>
+		<x_pos>{{html.x_pos|floatformat:"0"}}</x_pos>
+		<y_pos>{{html.y_pos|floatformat:"0"}}</y_pos>
+		<width>{{html.width}}</width>
+		<height>{{html.height}}</height>
+		<visible>{{html.visible}}</visible>
+		<html_content><![CDATA[{{html.html_content |safe}}]]></html_content>
+	</render_html>
+	{% endfor %}{% for image in images %}
+	<show_image>
+		<name>{{image.name}}</name>
+		<x_pos>{{image.x_pos}}</x_pos>
+		<y_pos>{{image.y_pos}}</y_pos>
+		<visible>{{image.visible}}</visible>
+		<draggable>{{image.draggable}}</draggable>
+		<file_name>{{image.file_name}}</file_name>
+		{{image.get_onclick|safe}}
+	</show_image>
+	{% endfor %}
+</board>

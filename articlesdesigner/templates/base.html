@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">  
+<title>Articles - editor</title>
+{% load i18n %}
+ 
+<!--
+    <link href="/articlesdesigner/media/js/linedtextarea/jquery-linedtextarea.css" type="text/css" rel="stylesheet" />
+-->
+<link href="/articlesdesigner/media/js/jquery-ui/themes/base/jquery-ui.css" media="all" rel="stylesheet" type="text/css" />
+<link href="/articlesdesigner/media/js/jpicker/css/jPicker-1.1.6.min.css" rel="Stylesheet" type="text/css"  />
+<link href="/articlesdesigner/media/js/img_area_select/css/imgareaselect-default.css" rel="stylesheet" type="text/css"  />
+<link href="/articlesdesigner/media/js/code_mirror/lib/codemirror.css" type="text/css" rel="stylesheet" />
+<link href="/articlesdesigner/media/js/code_mirror/addon/fold/foldgutter.css" type="text/css" rel="stylesheet" />
+<link href="/articlesdesigner/media/js/code_mirror/addon/lint/lint.css" type="text/css" rel="stylesheet" />
+<link href="/articlesdesigner/media/js/handsontable/dist/jquery.handsontable.full.css" rel="stylesheet" media="screen">
+<link href="/articlesdesigner/media/js/opentip/css/opentip.css" type="text/css" rel="stylesheet" />
+<link href="/articlesdesigner/media/js/contextmenu/css/jquery.contextmenu.css" type="text/css" rel="stylesheet" />
+
+<link href='/articlesdesigner/media/css/style.css' rel='stylesheet' type='text/css'>
+<link href='/articlesdesigner/media/css/emulator.css' rel='stylesheet' type='text/css'>
+{% block bhead %} {% endblock %}
+{% block head %}{% endblock %}
+</head>
+<body>
+    
+    <div id="layer_shadow" class="layer_shadow"></div>
+    <div id="editor_click" class="editor_click"></div>
+    <div id="editor_cursor"></div>
+    <div id="target_top_left"></div>
+    
+	<div id="editor">
+    	<div id="top">{% block top %} {% endblock %}</div>
+        
+        <div style="width:1220px;">
+        	<div id="content">{% block content %} {% endblock %}</div>    
+        	<div id="menu">{%block menu %}{% endblock %}
+    	</div>
+    	    
+    	</div>
+    
+    	<div id="footer">
+    		<p>&copy; LogToMobile</p>
+    	</div>
+	</div>
+    <div id="emulator">{% block emulator %} {% endblock %}</div>
+    <div id="code_editor">{% block code_editor %} {% endblock %}</div>
+    <div>{% block administrator %} {% endblock %}</div>   
+</body>
+</html>

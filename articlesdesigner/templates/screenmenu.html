@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">  
+<link href="/articlesdesigner/media/js/alertify/alertify.core.css" type="text/css" rel="stylesheet"></style>
+<link href="/articlesdesigner/media/js/alertify/alertify.default.css" type="text/css" rel="stylesheet"></style>
+<link href='/articlesdesigner/media/css/settings.css' rel='stylesheet' type='text/css'>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="/articlesdesigner/media/js/alertify/alertify.min.js"></script>
+<script src="/articlesdesigner/media/js/utils.js"></script>
+<script src="/articlesdesigner/media/js/ajax.js"></script>
+
+<title>Articles - boards</title>
+<script>
+
+
+    $(function(){
+
+		var screensList = [],
+			isNewScreen = "{{request.GET.newscreen}}",
+			codesList = [],
+			startId = -1
+	
+		function isExistStringInArray(string,array) {
+			for(var i = 0; i < array.length; i++) {
+				if(array[i] == string) {
+					return true;
+				}
+			}
+			return false;
+		}		
+		
+		function selectTabs(elem,tab) {
+			if (tab == 0) {
+				$(elem).addClass("selected");
+				$("#tabs2").removeClass("selected");
+				$("#content_select_app").css("display","block");
+				$("#content_create_new_app").css("display","none");
+			} else if (tab == 1) {
+				$(elem).addClass("selected");
+				$("#tabs1").removeClass("selected");	
+				$("#content_select_app").css("display","none");			
+				$("#content_create_new_app").css("display","block");
+			}
+		}
+		
+		{% if not screens %}
+            selectTabs($("#tabs1"),0);
+		{% else %}
+            selectTabs($("#tabs2"),1);
+		{% endif %}	
+
+		if (isNewScreen == "1") {
+			selectTabs($("#tabs1"),0);
+		}
+		
+		{% if form.errors %}
+			selectTabs($("#tabs1"),0);
+		{% endif %}	
+		
+		$("#tabs1").click(function(){
+			selectTabs(this, 0);
+		});
+		
+		$("#tabs2").click(function(){
+			selectTabs(this, 1);			
+		});		
+		
+		$(".list_items li").click(function(){
+			var text = $(this).first().text();
+			window.location.assign("#"+text);
+		});	
+				
+		{% for screen in screens %}screensList.push("{{screen.title}}");{% endfor %}	
+        {% for code in codes %}codesList.push({id:{{code.id}}, screen_id: {{code.screen_id}}, user_code: "{{code.user_code}}", generated_code: "{{code.generated_code}}", start:{{code.start}} });{% endfor %}
+                
+        function changeStartIdInDataBase(startId) {
+            if (startId < 0) {
+                return;
+            }
+            for(var i=0; i< codesList.length; i++) {
+                codesList[i].start = 0;
+                if (codesList[i].screen_id == startId) {
+                    codesList[i].start = 1;
+                }
+                updateCodes(codesList[i].screen_id, codesList[i].user_code, codesList[i].generated_code, codesList[i].start)
+            }
+        }
+                
+        function setStartId() {
+            for(var i=0; i< codesList.length; i++) {
+                if (codesList[i].start == 1) {
+                    startId = codesList[i].screen_id;
+                }
+            }
+            if (startId == -1 && codesList.length > 0) {
+                startId = codesList[0].screen_id;
+                codesList[0].start = 1;
+                changeStartIdInDataBase(startId);
+            }
+            if (startId > -1) {
+                $("#start"+startId).attr("checked", true); 
+            }            
+        }                
+        setStartId();               		
+		
+		$("input[name=setstart]").click(function() {
+		   //alert($(this).attr("_id")); 
+		   changeStartIdInDataBase(parseInt($(this).attr("_id")))
+		});
+		
+		function skipReservedWords(word) {
+		  var listReservedWords = ["Board","Clickable Area","TextEdit", "Label", "Button", "new"];
+		  for(var i=0; i < listReservedWords.length; i++) {
+		      if (word == listReservedWords[i]) {
+		          word = word.toLowerCase();
+		          return word;
+		      }
+		  }
+		  return word;
+		}
+									
+		$( "#form" ).submit(function( event ) {
+		    
+            var nameBoard = $("#form_title").val().toString();
+            //nameBoard = skipReservedWords(nameBoard);            
+            //nameBoard = nameBoard.correctVariable("_");
+            $("#form_title").val(nameBoard);		    
+		    
+			if (!(nameBoard)) {
+				$("#form_title_error").css("display","block");
+				$("#form_title_error").text("Please fill in this field");				
+			} else if (isExistStringInArray(nameBoard,screensList)) {
+				$("#form_title_error").css("display","block");
+				$("#form_title_error").text("There is already such a board with the same name");
+			} else {
+				$("#form_title_error").css("display","none");
+				return;
+			}
+
+			event.preventDefault();
+		});	
+		
+    });
+	
+	window.history.forward();
+    function noBack() { window.history.forward(); }
+    
+    function removeSuccess(id) {
+        window.location.assign("/articlesdesigner/addscreen/app/{{app.id}}/");
+    }
+    function removeFailed(id) {
+        alertify.error("Error. Not removed.");       
+    }
+    
+    function removePosition(id) {
+		alertify.set({ labels: {
+			ok     : "Cancel",
+			cancel : "Remove"
+		} });        
+		alertify.confirm("Are you sure you want to remove?", function (e) {
+			if (e) {
+			} else {
+				removeScreen(id, removeSuccess, removeFailed);				
+			}
+		}); 	
+    }	
+	
+</script>
+</head>
+<body onload="noBack();" onpageshow="if (event.persisted) noBack();" onunload="">
+
+    <div id="goback_section">
+		<img src="/articlesdesigner/media/img/settings/arrow_blue_left.png"> <a href="/articlesdesigner/select/app/" class="blue">Back to your articles list</a>
+    </div>
+
+    <div id="logout_section">
+		<div class="logout_text">You are logged in as<br /> {{user.email}}</div>
+        <div><a href="/articlesdesigner/accounts/logout"><img src="/articlesdesigner/media/img/settings/log_out_btn.png"></a></div>		
+    </div>
+    <div id="apps">
+        <div class="header">
+            <span class="header_title">{{app.name}}</span><br />
+            <!--<span class="header_subtitle">Let's make games together !</span>-->
+        </div>
+        <div class="section">
+			<div id="tabs" class="tabs">
+				<div id="tabs2" class="selected">
+					<span>Create new article board</span>
+				</div>
+				<div id="tabs1">
+					<span>Article boards</span>
+				</div>
+			</div>
+			<div id="content_select_app" style="margin-top:4px;">
+				<div class="select_screen_for_app"><span>Click on article you wish to edit.</span></div><!--<span>Select screen for: </span><span>{{app.name}}</span></div>-->
+				<ul class="list_items">
+					{% for screen in screens %}
+                           <li>
+                              <div>
+                               <a href="/articlesdesigner/screen/{{screen.id}}/">
+                                   <div class="left">
+                                       <p>{{screen.title}}</p>									   
+                                   </div>
+                              </a>
+                              <div class="setstart">
+                                       <a style="cursor:pointer;" onclick="">
+                                           <label style="cursor: pointer;">Start: <input id="start{{screen.id}}" _id="{{screen.id}}" type="radio" name="setstart" style="margin-top: 22px;"></label>
+                                       </a>
+                              </div>   
+                              <div class="remove">
+                                       <a style="cursor:pointer;" onclick="removePosition({{screen.id}});">
+                                           <img src="/articlesdesigner/media/img/settings/icon_remove2.png" style="margin-top: 22px;">
+                                       </a>
+                              </div>                                                              
+                              </div>
+                           </li>					
+					
+					{% endfor %}
+				</ul>
+			</div>
+			<div id="content_create_new_app">
+				<form id="form" action="/articlesdesigner/screen/new/{{aid}}/" method="post">
+					{% csrf_token %}
+					<div class="separate_space"></div>
+					<div class="separate_space"></div>    
+					
+					<p class="error" id="form_title_error" style="padding-left:120px;"></p>
+					<div class="input_normal">
+						<div>Title</div>
+						<div><input id="form_title" type="text" name="title"></div>
+					</div>
+	   
+					<div class="separate_space"></div>    
+					<div class="separate_space"></div>    
+					<div class="separate_space"></div>				
+					<input id="submit" name="submit" type="image" src="/articlesdesigner/media/img/settings/button_create_new_article_board.png" />
+				</form>
+			</div>
+        </div>        
+		<div>
+			<!-- <img src="/articlesdesigner/media/img/settings/arrow_blue_left.png"> <a href="/articlesdesigner/select/app/" class="blue">Go back to game list</a>-->
+		</div>
+    </div>
+	
+	<div class="fotter">
+		Copyright &copy; 2013 App Creator. All rights reserved
+	</div>
+    
+</body>
+</html>

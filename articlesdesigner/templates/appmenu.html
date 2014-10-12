@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">  
+<link href="/articlesdesigner/media/js/jquery-ui/themes/base/jquery-ui.css" media="all" rel="stylesheet" type="text/css" />
+<link href="/articlesdesigner/media/js/alertify/alertify.core.css" type="text/css" rel="stylesheet"></style>
+<link href="/articlesdesigner/media/js/alertify/alertify.default.css" type="text/css" rel="stylesheet"></style>
+<link href='/articlesdesigner/media/css/settings.css' rel='stylesheet' type='text/css'>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="/articlesdesigner/media/js/jquery-ui/ui/jquery-ui.js"></script>
+<script src="/articlesdesigner/media/js/alertify/alertify.min.js"></script>
+<script src="/articlesdesigner/media/js/utils.js"></script>
+<script src="/articlesdesigner/media/js/ajax.js"></script>
+<script src="/articlesdesigner/media/js/cs_message_dialog.js"></script>
+    
+
+<title>Articles list - add, open, published</title>
+<script>
+
+    $(function(){
+		var isNewApp = "{{request.GET.newapp}}",
+			appsList = [],
+			userEmail = "{{user.email}}",
+			userId = "{{user.id}}";
+						
+		function isExistStringInArray(string,array) {
+			for(var i = 0; i < array.length; i++) {
+				if(array[i] == string) {
+					return true;
+				}
+			}
+			return false;
+		}			
+	
+		function selectTabs(elem,tab) {
+
+            // first clear for All...		    
+		    $("#tabs div").each(function() {
+		        $(this).removeClass("selected");
+		    });
+            $("#content_select_app").css("display","none");
+            $("#content_create_new_app").css("display","none");
+            $("#content_shared_apps").css("display","none");
+
+            // ..after set
+		    $(elem).addClass("selected");
+		    
+			if (tab == 0) {
+				$("#content_select_app").css("display","block");
+			} else if (tab == 1) {	
+				$("#content_create_new_app").css("display","block");
+			} else if (tab == 3) {  
+                $("#content_shared_apps").css("display","block");
+            }
+		}
+		{% if not apps %}
+			selectTabs($("#tabs2"),1);
+		{% else %}
+			selectTabs($("#tabs1"),0);
+		{% endif %}	
+		
+
+		if (isNewApp == "1") {
+			selectTabs($("#tabs2"),1);
+		}		
+		
+		{% if form.errors %}
+			selectTabs($("#tabs2"),1);
+		{% endif %}			
+		
+		$("#tabs1").click(function(){
+			selectTabs(this, 0);
+		});
+		
+		$("#tabs2").click(function(){
+			selectTabs(this, 1);			
+		});			        
+
+        $("#tabs4").click(function(){
+            selectTabs(this, 3);            
+        });             
+		
+		$(".list_items li").click(function(){
+			var text = $(this).first().text();
+			window.location.assign("#"+text);
+		});	
+		
+		{% for app in apps %}appsList.push("{{app.name}}");{% endfor %}		
+				
+		// correct select apps
+		$( "#form" ).submit(function( event ) {
+			var isSuccess = true;
+				
+			if (!($("#form_name").val())) {
+				$("#form_name_error").css("display","block");
+				$("#form_name_error").text("Please fill in this field");	
+				isSuccess = false;
+			} else if (isExistStringInArray($("#form_name").val(),appsList)) {
+				$("#form_name_error").css("display","block");
+				$("#form_name_error").text("There is already such an app with the same name");
+				isSuccess = false;
+			} else {
+				$("#form_name_error").css("display","none");
+			}
+			
+			/*if (!($("#form_character_name").val())) {
+				$("#form_character_name_error").css("display","block");
+				$("#form_character_name_error").text("Please fill in this field");	
+				isSuccess = false;
+			} else {
+				$("#form_character_name_error").css("display","none");
+			}*/
+				
+			if (isSuccess) {
+				return;
+			} else {
+				event.preventDefault($("#form_character_name").val());
+			}
+		});	
+		
+		function getIdOfFirstScreenForAppId(app_id) {		     
+          
+          var idFirstScreen = 0; 
+          getScreenList({
+              async: false,
+              data: {
+                  app_id: app_id
+              },            
+              success: function(resultJSON) {
+                  var jsonObj = JSON.parse(resultJSON);
+                  console.log(jsonObj.screens);
+                  if (jsonObj.screens && jsonObj.screens.length > 0){
+                      var firstScreen = jsonObj.screens[0];
+                      
+                      for( var prop in firstScreen ) {
+                          if( firstScreen.hasOwnProperty( prop ) ) {
+                              idFirstScreen = firstScreen[ prop ];
+                              break;
+                          }
+                      }
+                  }
+              }
+            });		
+            return idFirstScreen;    
+		}
+		
+		function setSharedApps() {
+		
+            var template = '<li><div><a href="/articlesdesigner/screen/%%SCREEN_ID%%/"><div class="left"><p>%%APP_NAME2%% (%%RELEASE%%)</p></div></a></div></li>';
+                           		
+    		// list of global apps
+    		getAppListByRelease({
+    		    async: false,
+    		    data: {
+    		        release: 2 // release global projects
+    		    },
+    		    success: function(resultJSON) {
+    		        var objJSON = JSON.parse(resultJSON),
+    		            appsObj = objJSON.apps;
+    		        for(var i=0; i < appsObj.length; i++) {
+    		            var singleApp = appsObj[i];    		            
+    		            var idFirstScreen = getIdOfFirstScreenForAppId(singleApp.id);
+    		            if (idFirstScreen > 0) {
+        		            var elementFromTemplate = template;
+                            elementFromTemplate = elementFromTemplate.replace("%%APP_NAME1%%", singleApp.name);
+                            elementFromTemplate = elementFromTemplate.replace("%%APP_NAME2%%", singleApp.name);
+                            elementFromTemplate = elementFromTemplate.replace("%%APP_ID%%", singleApp.id);
+                            elementFromTemplate = elementFromTemplate.replace("%%SCREEN_ID%%", idFirstScreen);
+                            elementFromTemplate = elementFromTemplate.replace("%%RELEASE%%", "global");
+                            $("#list_shared_apps").append(elementFromTemplate);
+                        }
+        
+    		        }
+    		    }    		    
+    		});
+    
+    		
+    		// list of shared Apps
+    		getListPublishEmail({
+    		   async: false,
+    		   email: userEmail,
+    		   success: function(result) {                              		         
+    		       // parse JSON
+    		       var objJSON = JSON.parse(result.json),
+    		          listSharedApps = objJSON.publish_emails;
+    		       // fill list
+    		       if (listSharedApps) {		           		           
+        		       for (var i=0; i < listSharedApps.length; i++) {
+        		          var elementFromTemplate = template,
+							  idFirstScreen = getIdOfFirstScreenForAppId(listSharedApps[i].app_id);
+                          if (idFirstScreen > 0) {
+                              elementFromTemplate = elementFromTemplate.replace("%%APP_NAME1%%", listSharedApps[i].name);
+                              elementFromTemplate = elementFromTemplate.replace("%%APP_NAME2%%", listSharedApps[i].name);
+                              elementFromTemplate = elementFromTemplate.replace("%%APP_ID%%", listSharedApps[i].app_id);
+                              elementFromTemplate = elementFromTemplate.replace("%%SCREEN_ID%%", idFirstScreen);
+                              elementFromTemplate = elementFromTemplate.replace("%%RELEASE%%", "user");
+                              $("#list_shared_apps").append(elementFromTemplate);
+                          }                          
+    
+        		       }
+    		       }
+    		       
+    		   },
+    		   error: function() {
+    		       
+    		   }		  
+    		});
+		}
+		setSharedApps(); // execute after created
+    });
+
+    function removeSuccess(id) {
+        window.location.assign("/articlesdesigner/select/app/");
+    }
+    function removeFailed(id) {
+		alertify.error("Error. Not removed.");		
+    }
+    
+    function removePosition(id) {
+		alertify.set({ labels: {
+			ok     : "Cancel",
+			cancel : "Remove"
+		} });        
+		alertify.confirm("Are you sure you want to remove?", function (e) {
+			if (e) {
+			} else {
+				removeApp(id, removeSuccess, removeFailed);				
+			}
+		}); 	
+    }
+    
+</script>
+</head>
+<body>
+
+    <div id="logout_section">
+		<div class="logout_text">You are logged in as<br /> {{user.email}}</div>
+        <div><a href="/articlesdesigner/accounts/logout"><img src="/articlesdesigner/media/img/settings/log_out_btn.png"></a></div>		
+    </div>
+    
+    <div id="apps">
+        <div class="header">
+            <span class="header_title">Articles Designer</span><br />
+            <span class="header_subtitle">Let's make articles together !</span><br /><br />            
+            
+        </div>
+        <div class="section">
+			<div id="tabs" class="tabs_articles" style="height:60px;">
+				<div id="tabs1">
+					<span>Your articles</span>
+				</div>
+                <div id="tabs4">
+                    <span>All published articles</span>
+                </div>
+                <div id="tabs2">
+                    <span>Create new article</span>
+                </div>
+			</div>			
+			
+			
+			<div id="content_select_app" style="margin-top:4px;">
+				<ul class="list_items">
+					{% for app in apps %}
+					   {% if app.release == 0 and app.user_id == user.id %}
+        				   <li>
+        				       <div>
+        				       <a href="/articlesdesigner/addscreen/app/{{app.id}}/">
+        				           <div class="left">
+        				               <p>{{app.name}}</p>
+        				           </div>
+        				      </a>
+                                   <div class="remove">
+                                       <a style="cursor:pointer;" onclick="removePosition({{app.id}});">
+                                           <img src="/articlesdesigner/media/img/settings/icon_remove2.png" style="margin-top: 22px;">
+                                       </a>
+                                   </div>        				           
+        				       </div>
+        				   </li>
+					   {% endif %}
+					{% endfor %}
+				</ul>
+			</div>
+			<div id="content_create_new_app">
+				<form id="form" action="/articlesdesigner/app/new/" method="post">
+					{% csrf_token %}
+					<div class="separate_space"></div>
+					<div class="separate_space"></div>
+					<p class="error" id="form_name_error" style="padding-left:120px;"></p>
+					<div class="input_normal">
+						<div>Title</div>
+						<div><input id="form_name" type="text" name="name"></div>
+					</div>
+					<div class="separate_space"></div>
+					<p class="error" id="form_character_name_error" style="padding-left:120px;"></p>
+                    <input id="form_character_name" type="hidden" name="character_name" value="None">
+                    <!--<div class="input_normal">
+                        <div>Character name</div>
+                        <div><input id="form_character_name" type="text" name="character_name"></div>
+                    </div>-->
+	               
+	                <div class="separate_space"></div>   
+					<div class="separate_space"></div>				
+					<input id="submit" name="submit" type="image" src="/articlesdesigner/media/img/settings/button_create_new_article.png" />
+				</form>
+			</div>
+            <div id="content_shared_apps" style="margin-top:4px;">
+                <ul id="list_shared_apps" class="list_items">
+                    
+                </ul>
+            </div>              		
+        </div>        
+    </div>
+	
+	<div class="fotter">
+		Copyright &copy; 2014 Articles Creator. All rights reserved
+	</div>
+	
+	<div id="messageDialog" class="dialog_editor" title=""></div>
+    
+</body>
+</html>

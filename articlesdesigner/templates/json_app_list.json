@@ -1,0 +1,7 @@
+{
+"apps": [
+		{% for app in apps %}
+		{"id":{{app.id}}, "name":"{{app.name}}", "orientation":"{{app.orientation}}", "user":{{app.user.id}}, "character_name":"{{app.character_name}}", "main_code":"{{app.main_code}}", "release":{{app.release}}, "authored_user":{{app.authored_user}}}{% if not forloop.last %},{% endif %}
+		{% endfor %}
+     ]
+}

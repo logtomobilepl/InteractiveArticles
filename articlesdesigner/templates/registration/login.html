@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">  
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<link href='/articlesdesigner/media/css/settings.css' rel='stylesheet' type='text/css'>
+<title>Login</title>
+<script>
+    $(function(){
+        //$("#submit").submit();
+    });
+</script>
+</head>
+<body>
+    
+    <div id="login">
+    
+        <div class="padlock">
+        </div>
+        <div class="section">
+            <form action="" method="post">
+                {% csrf_token %}
+                <p class="section_title">Log In</p>
+                {% if form.non_field_errors %}
+                <p class="red_border"><span>Please fill all fields<span></p>
+                {% endif %}
+                <div class="separate_space"></div>
+                <div class="input_split">
+                    <div>User</div>
+                    <div><input type="text" name="username"></div>
+                </div>
+                <div class="separate_space"></div>
+                <div class="input_split">
+                    <div>Password</div>
+                    <div><input type="password" name="password"></div>
+               </div>    
+               <div class="separate_space"></div>   
+               {% if next %}
+    <input type="hidden" name="next" value="{{ next }}" />
+    {% else %}
+    <input type="hidden" name="next" value="/articlesdesigner/select/app" />
+    {% endif %}    
+                <input id="submit" name="submit" type="image" src="/articlesdesigner/media/img/settings/button_login_green.png" /><br />
+<a href="/articlesdesigner/accounts/register" class="blue">Register a new account?</a>
+            </form>
+        </div>        
+    
+    </div>
+    
+
+</body>
+</html>

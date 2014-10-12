@@ -1,0 +1,117 @@
+#emulator {
+    margin: 0px;
+    padding: 0px;
+}
+
+
+#emulator_board {
+    margin: 0 auto;
+    margin-top: 50px;   /* this value must be  equals emulator_canvas_surface.top  */
+    border: 1px solid #BBBBBB;
+    /*width: 720px;
+    height: 1220px;*/
+    //overflow: hidden;
+}
+
+.emulator_background {
+    position: relative;
+    background-color: #fff;
+    overflow: hidden;
+    z-index: 50;
+}
+
+.emulator_canvas_surface {
+    position: absolute;
+    top:50px;   /* this value must be  equals emulator_board.margin-top  */
+    padding: 0px;
+    margin: 0px;
+    z-index: 51;
+    pointer-events: none;
+}
+
+.emulator_console, .emulator_console p {
+    position: absolute;
+    background-color: #fff;
+    color: #000;
+    overflow: hidden;
+    z-index: 52;
+}
+
+/*.emulator_console p {
+    color: #000;
+}*/
+
+#emulator_panelitems {
+    position: absolute;
+    background-image: url('../img/bottombar.png');
+    top: 1120px;
+    width: 720px;
+    height: 100px; 
+    padding: 0px;
+    margin: 0px;
+    z-index: 52;
+}
+
+#emulator_panelitems div.block {
+    float: left;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    background-color: gray;
+}
+
+#emulator_panelitems ul {
+    float: left;
+    list-style-type: none;
+    vertical-align: top; 
+    margin-left: 3px;
+    margin-bottom:10px;
+    margin-top:12px;
+    padding-top:0px;
+}
+
+#emulator_panelitems ul li {
+    float: left;
+    display: inline;
+    width: 75px;
+    height: 75px;
+    background-color: gray;
+    margin-right: 46px;
+    margin-top:0px;
+    padding-top:0px;
+    
+}
+
+.emulator_btn {
+    position: fixed;
+    left: 10px;
+    top: 10px;
+    height: 70px;
+    cursor: pointer;
+    border: 1px solid #4a4c5a;
+}
+
+.emulator_btn div {
+    height: 70px;
+    display: table-cell; 
+    vertical-align: middle; 
+}
+
+.emulator_btn div.back_text {
+    padding-left: 16px;
+    padding-right: 10px;
+    font-size: 16pt;
+    font-weight: bold;
+    color: #4a4c5a;
+}
+
+.ui-progressbar {
+    position: relative;
+  }
+  .progress-label {
+    position: absolute;
+    left: 50%;
+    top: 4px;
+    font-weight: bold;
+    text-shadow: 1px 1px 0 #fff;
+  }

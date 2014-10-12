@@ -1,0 +1,7 @@
+{
+"bubbles": [
+		{% for bubble in bubbles %}
+		{"id":{{bubble.id}}, "lesson":{{bubble.lesson.id}}, "order":{{bubble.order}}, "content":{{bubble.content}}}{% if not forloop.last %},{% endif %}
+		{% endfor %}
+     ]
+}

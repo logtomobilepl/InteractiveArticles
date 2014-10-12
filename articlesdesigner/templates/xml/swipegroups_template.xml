@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<swipegroups>
+    {% for swipegroup in swipegroups %}
+    <swipegroup name="{{swipegroup.name}}">
+        <page_control_visible>{{swipegroup.page_control_visible}}</page_control_visible>
+        <top_image_visible>{{swipegroup.page_control_visible}}</top_image_visible>
+        <navigation_bar_visible>{{swipegroup.navigation_bar_visible}}</navigation_bar_visible>
+        <pager_tab_visible>{{swipegroup.pager_tab_visible}}</pager_tab_visible>
+        <elements>
+            {% for element in swipegroup.get_elements %}
+                <element>{{element.xmlfile}}</element>
+            {% endfor %}
+        </elements>
+    </swipegroup>
+    {% endfor %}
+</swipegroups>
+

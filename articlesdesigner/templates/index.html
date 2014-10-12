@@ -1,0 +1,701 @@
+{% extends 'base.html' %}
+{% block head %}
+<script>
+    var appId = {{screen.app_id}},
+        appName = "{{app.name}}",
+        orientation = "{{app.orientation}}",
+        currentScreenId = {{screen.id}},
+        boardId = {{board.id}},  //board:{{board.id}}
+        boardBackground = "{{board.background}}",
+        boardSound = "{{board.sound}}",
+        characterName = "{{app.character_name}}",
+        panelItemsVisible = {{board.panel_items}},
+        userId = {{user.id}},
+        startCode = {{code.start}},
+        jsonSettings = "{{settings_obj.get_all_json}}".trim(),
+        isEditTutorial = "{{isEditTutorial}}",
+        isContinueTutorial = "{{isContinueTutorial}}",
+        releaseApp = {{app.release}},
+        isEmulatedOnly = "{{is_emulated_only}}",
+        isEditStart = "{{isEditStart}}",
+        isEditEnd = "{{isEditEnd}}",
+        lessonId = "{{lesson.id}}",
+        lessonOrder = "{{lesson.order}}",
+        moduleId = "{{module.id}}",
+        moduleOrder = "{{lesson.module.order}}";
+        
+        if (releaseApp == 1 || releaseApp == 2) {
+            isEmulatedOnly = "True";
+        }
+        
+</script>
+
+
+<!--    
+    <script src="/articlesdesigner/media/js/linedtextarea/jquery-linedtextarea.js"></script>
+    <script src="/articlesdesigner/media/js/jeditable/jquery.jeditable.js"></script>
+-->
+<!-- EXTERNAL LIBS -->
+<script src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+<script src="/articlesdesigner/media/js/jquery-ui/jquery-1.9.1.js"></script>
+<script src="/articlesdesigner/media/js/jquery-ui/ui/jquery-ui.js"></script>
+<script src="/articlesdesigner/media/js/object.watch/object.watch.js"></script>
+<script src="/articlesdesigner/media/js/img_area_select/scripts/jquery.imgareaselect.pack.js"></script>
+<script src="/articlesdesigner/media/js/jeditable/jquery.autogrow.js"></script>
+<script src="/articlesdesigner/media/js/editable/jquery.editable.js"></script>
+<script src="/articlesdesigner/media/js/jstree/jquery.jstree.js"></script>
+<script src="/articlesdesigner/media/js/jpicker/jpicker-1.1.6.min.js" ></script> 
+<script src="/articlesdesigner/media/js/corner/jquery.corner.js" ></script> 
+<script src="/articlesdesigner/media/js/numeric/jquery.numeric.js"></script>
+<script src="/articlesdesigner/media/js/code_mirror/lib/codemirror.js"></script>
+<script src="/articlesdesigner/media/js/code_mirror/mode/javascript/javascript.js"></script>
+<script src="/articlesdesigner/media/js/code_mirror/addon/selection/active-line.js"></script>
+
+<script src="/articlesdesigner/media/js/code_mirror/addon/fold/foldcode.js"></script>
+<script src="/articlesdesigner/media/js/code_mirror/addon/fold/foldgutter.js"></script>
+<script src="/articlesdesigner/media/js/code_mirror/addon/fold/brace-fold.js"></script>
+<script src="/articlesdesigner/media/js/code_mirror/addon/fold/comment-fold.js"></script>
+<script src="//ajax.aspnetcdn.com/ajax/jshint/r07/jshint.js"></script>
+<!--<script src="https://rawgithub.com/zaach/jsonlint/79b553fb65c192add9066da64043458981b3972b/lib/jsonlint.js"></script>
+<script src="https://rawgithub.com/stubbornella/csslint/master/release/csslint.js"></script>-->
+<script src="/articlesdesigner/media/js/code_mirror/addon/lint/lint.js"></script>
+<script src="/articlesdesigner/media/js/code_mirror/addon/lint/javascript-lint.js"></script>
+<!--<script src="/articlesdesigner/media/js/code_mirror/addon/lint/json-lint.js"></script>
+<script src="/articlesdesigner/media/js/code_mirror/addon/lint/css-lint.js"></script>-->
+
+<script src="/articlesdesigner/media/js/handsontable/dist/jquery.handsontable.full.js"></script>
+<script src="/articlesdesigner/media/js/splitter/splitter.js"></script>
+<script src="/articlesdesigner/media/js/opentip/js/opentip-jquery.js"></script>
+<script src="/articlesdesigner/media/js/contextmenu/js/jquery.contextmenu.js"></script>
+<script src="/articlesdesigner/media/js/wami_recorder/recorder.js"></script>
+<script src="/articlesdesigner/media/js/wami_recorder/gui.js"></script>
+
+<!-- ALL BELOW JS FILES IN ONE BIG FILES (COMPRESSED http://joliclic.free.fr/php/javascript-packer/en/index.php) -->
+<!-- <script src="/articlesdesigner/media/js/all/all.min.js"></script>  
+<script src="/articlesdesigner/media/js/all/all.js"></script> -->
+
+<!-- SYSTEM FILES -->
+<script src="/articlesdesigner/media/js/utils.js"></script>
+<script src="/articlesdesigner/media/js/ce_parser_js_code.js"></script>
+<script src="/articlesdesigner/media/js/algorithm.js"></script>
+<script src="/articlesdesigner/media/js/cs_generate.js"></script>
+<script src="/articlesdesigner/media/js/cs_convert.js"></script>
+<script src="/articlesdesigner/media/js/events_notification.js"></script>
+<script src="/articlesdesigner/media/js/sound.js"></script>
+<script src="/articlesdesigner/media/js/stoper.js"></script>
+<script src="/articlesdesigner/media/js/upload.js"></script>
+<script src="/articlesdesigner/media/js/creator.js"></script>
+<script src="/articlesdesigner/media/js/main.js"></script>
+<script src="/articlesdesigner/media/js/cs_application.js"></script>
+<script src="/articlesdesigner/media/js/cs_canvas.js"></script>
+<script src="/articlesdesigner/media/js/cs_grid.js"></script>
+<script src="/articlesdesigner/media/js/cs_active_element.js"></script>
+<script src="/articlesdesigner/media/js/cs_properties.js"></script>
+<script src="/articlesdesigner/media/js/cs_popups_container.js"></script>
+<script src="/articlesdesigner/media/js/cs_maps_container.js"></script>
+<script src="/articlesdesigner/media/js/cs_actions.js"></script>
+<script src="/articlesdesigner/media/js/cs_actions_elements.js"></script>
+<script src="/articlesdesigner/media/js/cs_color.js"></script>
+<script src="/articlesdesigner/media/js/cs_resources_upload.js"></script>
+<script src="/articlesdesigner/media/js/cs_callback_handle.js"></script>
+<script src="/articlesdesigner/media/js/cs_global_change.js"></script>
+<script src="/articlesdesigner/media/js/cs_file_info.js"></script>
+<script src="/articlesdesigner/media/js/cs_message_dialog.js"></script>
+<script src="/articlesdesigner/media/js/messages.js"></script>
+<script src="/articlesdesigner/media/js/ce_definitions.js"></script>
+<script src="/articlesdesigner/media/js/ce_statements.js"></script>
+<script src="/articlesdesigner/media/js/ce_editor_strings.js"></script>
+<script src="/articlesdesigner/media/js/ce_editor.js"></script>
+<script src="/articlesdesigner/media/js/ce_editor_data.js"></script>
+<script src="/articlesdesigner/media/js/ce_manager.js"></script>
+<script src="/articlesdesigner/media/js/ce_help.js"></script>
+<script src="/articlesdesigner/media/js/ce_explorer.js"></script>
+<script src="/articlesdesigner/media/js/ce_templates.js"></script>
+<script src="/articlesdesigner/media/js/cs_recordwriting.js"></script>
+<script src="/articlesdesigner/media/js/cs_autowriting.js"></script>
+<script src="/articlesdesigner/media/js/emu_main.js"></script>
+<script src="/articlesdesigner/media/js/emu_dialogs.js"></script>
+<script src="/articlesdesigner/media/js/cookies.js"></script>
+<script src="/articlesdesigner/media/js/ajax.js"></script>
+<script src="/articlesdesigner/media/js/addingElements.js"></script>
+<script src="/articlesdesigner/media/js/cs_concepts.js"></script>
+<script src="/articlesdesigner/media/js/cs_sequences_tips.js"></script>
+<script src="/articlesdesigner/media/js/cs_sequences_system.js"></script>
+<script src="/articlesdesigner/media/js/cs_anims.js"></script>
+<script src="/articlesdesigner/media/js/publish_code.js"></script>
+
+<!-- jScrollPane section 
+<link type="text/css" href="/articlesdesigner/media/js/j_scroll_pane/style/jquery.jscrollpane.css" rel="stylesheet" media="all" />
+<link type="text/css" href="/articlesdesigner/media/js/j_scroll_pane/style/jquery.jscrollpane.lozenge.css" rel="stylesheet" media="all" />
+<script src="/articlesdesigner/media/js/j_scroll_pane/script/jquery.mousewheel.js"></script>
+<script src="/articlesdesigner/media/js/j_scroll_pane/script/jquery.jscrollpane.min.js"></script>
+<script id="sourcecode">
+$(function() {
+        $('.scroll-pane').jScrollPane();
+    });
+</script>-->
+
+<script>
+  $(document).ready(function() {
+    console.log("Loaded scripts.\nStart app.");
+    
+    
+    main(); // MAIN - init system
+    
+    // ADD ELEMENTS FROM BASE    
+    {% for button in buttons %}
+        var btn = { loaded: true,
+                    type: ELEMENT_TYPE_BUTTON,
+                    id: "{{button.id}}",
+                    text: "{{button.title_label}}",
+                    text_color: "{{button.title_color}}",
+                    font_size: {{button.font_size}},
+                    font_type: "{{button.font_type}}",                    
+                    background_image: "{{button.background_image}}",
+                    screen_id: {{button.screen_id}},
+                    x_pos: {{button.x_pos}},
+                    y_pos: {{button.y_pos}},
+                    width: {{button.width}},
+                    height: {{button.height}},
+                    name: "{{button.name}}",
+                    visible: {{button.visible}},
+                    actions: "{{button.onclick}}",
+                  }  
+        addElementToCanvas(btn);
+        
+    {% endfor %}
+    {% for text in texts %}
+        var txt = { loaded: true,
+                    type: ELEMENT_TYPE_TEXT,
+                    id: "{{text.id}}",
+                    screen_id: {{text.screen_id}},
+                    x_pos: {{text.x_pos}},
+                    y_pos: {{text.y_pos}},
+                    text: "{{text.text}}",
+                    text_color: "{{text.text_color}}",
+                    font_size: {{text.font_size}},
+                    font_type: "{{text.font_type}}",
+                    width: {{text.width}},
+                    height: {{text.height}},
+                    name: "{{text.name}}",
+                    visible: {{text.visible}}
+                  }         
+        addElementToCanvas(txt);
+        
+    {% endfor %} 
+    {% for image in images %}
+        var image = { loaded: true,
+                    type: ELEMENT_TYPE_IMAGE,
+                    id: "{{image.id}}",
+                    screen_id: {{image.screen_id}},
+                    file_name: "{{image.file_name}}",
+                    draggable: {{image.draggable}},
+                    x_pos: {{image.x_pos}},
+                    y_pos: {{image.y_pos}},
+                    name: "{{image.name}}",
+                    visible: {{image.visible}}
+                  }         
+        addElementToCanvas(image);
+    {% endfor %} 
+    {% for html in htmls %}
+        var html = { loaded: true,
+                    type: ELEMENT_TYPE_HTML,
+                    id: "{{html.id}}",
+                    html_content: "{{html.html_content}}",
+                    x_pos: {{html.x_pos}},
+                    y_pos: {{html.y_pos}},
+                    name: "{{html.name}}",
+                    visible: {{html.visible}}
+                  }         
+        addElementToCanvas(html);
+    {% endfor %}   
+    {% for area in areas %}
+        var area = { loaded: true,
+                    type: ELEMENT_TYPE_CLICKABLE_AREA,
+                    id: "{{area.id}}",
+                    screen_id: {{area.screen_id}},
+                    area_image: "{{area.file_name}}",                    
+                    x_pos: {{area.x}},
+                    y_pos: {{area.y}},
+                    width: {{area.width}},
+                    height: {{area.height}},
+                    name: "{{area.name}}",
+                    visible: {{area.visible}},
+                    actions: "{{area.onclick}}",
+                  }
+       addElementToCanvas(area);
+
+    {% endfor %}   
+	
+    {% for popup in tpopups %}
+        popupsContainer.addPopup(true, "{{popup.id}}", "{{popup.name}}", "{{popup.title}}", "{{popup.description}}", "{{popup.onclick}}");
+    {% endfor %}      	
+
+    {% for code in codes %}
+		(function code() {
+		
+			function removeSingleDash(string) {
+				if (string.trim() == "-") {
+					string = "";
+				}	
+				return string;
+			}
+		
+			var code = {
+				screen_id: {{code.screen_id}},
+				user_code: "{{code.user_code}}",
+				generated_code: "{{code.generated_code}}",
+				start: {{code.start}},
+			}
+			code.user_code = specialCharsToHtml(code.user_code);
+			code.user_code = application.codeSeparate2nl(code.user_code);
+			code.user_code = removeSingleDash(code.user_code);
+			code.generated_code = specialCharsToHtml(code.generated_code);
+			code.generated_code = application.codeSeparate2nl(code.generated_code);
+			code.generated_code = removeSingleDash(code.generated_code);
+			application.codes.push(code);
+		}());
+    {% endfor %}
+    {% for board in boards %}
+        var board = { id: "{{board.id}}",
+                screen_id: "{{board.screen_id}}",
+                background: "{{board.background}}",
+                sound: "{{board.sound}}",
+                panel_items: "{{board.panel_items}}",  
+              }    
+        
+        application.boardsList.push(board);
+    {% endfor %}       
+    
+    (function mainCode(){
+        var mCode = "{{app.main_code}}";
+        mCode = mCode.trim();
+        if (mCode == "None") {
+            mCode = "";
+        }
+        mCode = specialCharsToHtml(mCode);
+        mCode = application.codeSeparate2nl(mCode);
+        application.mainCode = mCode;
+    }());
+    
+    // END OF BLOCK LOADED DATA FROM BASE 
+    
+    application.instancesObjectsCreated();
+      
+    (function tryRunEmulator(){
+        
+        
+        if (releaseApp == 1 || releaseApp == 2 || isEmulatedOnly == "True") {
+            // hide editor screen, only emulator is available                       
+            application.onlyRun = true;
+            var jEditor = $("#editor");
+            //var parentEditor = jEditor.parent();
+            //parentEditor.remove(jEditor);
+            jEditor.remove();
+            //$("#editor").css("display", "none"); 
+            $("#"+browserEmulator.idBack).css("display", "none");
+            $("#"+browserEmulator.idBackToCode).css("display", "none");
+            if (releaseApp == 1 || releaseApp == 2) {
+                $("#"+browserEmulator.idBackToAppList).css("display", "block");
+            }     
+            if (isEmulatedOnly == "True") {       
+                $("#"+browserEmulator.idBackToLessonsList).css("display", "block");
+            }            
+            if (codeEditor.canCompile()) {
+                browserEmulator.clearAfterCompilation();
+                codeEditor.startCompile();
+            } else {
+                messageDialog.show("Run app", "Error in compilation. Return to app list.", "OK", function(){
+                    window.location.assign("/articlesdesigner/select/app/");    
+                })                
+            }        
+        }
+    }());
+    
+    (function setTutorialData(){
+        
+        if (isEditTutorial == "True" && isEditEnd == "True") {            
+            adminEditor = new AdministratorEditor();    
+            adminEditor.lessonId = parseInt(lessonId);
+            adminEditor.lessonOrder = parseInt(lessonOrder);
+            adminEditor.show();  
+        }
+        
+        if (isContinueTutorial == "True") {
+            sequencesSystem.loadTutorial(parseInt(lessonId), function() {
+                sequencesSystem.startBubbles();
+            });            
+        }
+        
+    }());
+       
+  });
+    
+    
+</script>
+{% endblock %}
+
+
+{% block menu %}
+
+<!--
+<div style="width:320px;margin-left: 25px;margin-top:8px;margin-bottom:16px;">
+    <p class="strong_gray_text" style="margin-left: 0px; margin-top: 0px;">Select sound at the start</p>
+    <ul id="select_audio" style="color:white; width:280px;margin-top:-4px;" class="menu"></ul>
+</div>      
+ -->
+
+<div id="menu_new_item"><p>New item</p>  </div> 
+<div id="menu_new_item_section" >
+    <div id="menu_list_container">  <!-- title="Drag and drop the item on canvas">-->
+	<ul class="menu">
+        <li style="padding-top: 5px;padding-bottom: 5px;;">
+            <div class="menu_item" id="text" ></div>
+            <div class="menu_item" id="image" ></div>
+            <div class="menu_item" id="button" ></div>
+            <div class="menu_item" id="clickable_area"></div>
+            <!--<div class="menu_item" id="textedit" ></div>-->
+            <div class="menu_item" id="map" ></div>
+        </li>	
+	</ul>	
+    </div>
+</div>
+
+<a name="tagProperties"></a>
+<div id="menu_properties"><p>Properties</p></div> 
+<div id="menu_properties_section">
+    <ul id="properties" class="menu">
+    </ul>
+        <ul id="actions_parameters" style="position: absolute;left:310px;top:10px;padding-left:8px;padding-right:8px;background-color: #141621;" class="menu actions_parameters"></ul>
+    <div id="actions" class="actions"> 
+        <div id="actions_header">
+            <p class="strong_white_text" style="display: inline;">ACTIONS</p>         
+        </div>           
+        <ul id="actions_available" class="actions_available" > </ul>      
+        <ul id="actions_tree" class="menu"></ul>                 
+    </div>
+</div>
+
+<a name="tagElementList"></a>
+<a href="#tagElementList" style="text-decoration: none;"><div id="menu_elements_list"><p>Elements List</p></div></a> 
+<div id="menu_elements_list_section">
+    <div id="elements_list"></div>
+</div>
+
+<div id="menu_properties_bottom" style="width:300px;">
+    <ul id="properties_bottom" class="menu">
+    </ul>   
+</div>
+
+
+{% endblock %}
+{% block top %}
+
+<div id="top_options">
+    <div style="float:left;">
+        <div style="float:left;width:65px;">			
+			<img src="/articlesdesigner/media/img/top_header_btn_back.png" class="top_header_icon" id="back_to_previous" />
+		</div>						
+        <div style="float:left;width:250px;margin-left:8px">
+            <p class="strong_text" style="margin-top:10px;margin-bottom: 8px;">You'are editing article board:</p>
+            <ul id="select_screen" class="menu"></ul>
+        </div>
+    </div>
+    <div id="header1_buttons" style="float: left;">            
+        <img src="/articlesdesigner/media/img/top_header_btn_new.png" class="top_header_icon" id="create_new_board"/>            
+        <img src="/articlesdesigner/media/img/top_header_btn_library.png" class="top_header_icon" id="dialog_resources_open"/>
+        <img src="/articlesdesigner/media/img/top_header_btn_popups.png" class="top_header_icon" id="dialog_popups_open"/>            
+        
+        <!--
+        <img src="/articlesdesigner/media/img/editor_open.png" style="margin:14px;padding:0px;width:40px; height:40px;" class="top_header_icon" id="dialog_code_editor_open"/>            
+        -->
+        <img src="/articlesdesigner/media/img/emu_run.png" style="margin:14px;padding:0px;width:40px; height:40px;" class="top_header_icon" id="dialog_code_editor_run"/>   
+        <img src="https://cdn4.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/32x32/publish.png" style="margin:14px;padding:0px;width:40px; height:40px;" class="top_header_icon" id="publish_code_open"/>                  
+    </div>    
+    <div style="float: right;">
+        <div id="logout_section">
+             <!--<a onclick="exportToZip();" style="color:#050505; cursor: pointer;">e</a>
+             <img src="/articlesdesigner/media/img/top_header_btn_projects.png" class="top_header_icon" style="position: static;" onclick="window.location.assign('/articlesdesigner/select/app/');"/> -->
+            <div class="logout_text">You are logged in as<br /> {{user.email}}</div>
+            <div><a href="/articlesdesigner/accounts/logout"><img src="/articlesdesigner/media/img/settings/log_out_btn.png"></a></div>     
+        </div>                      
+    </div>       
+    
+    
+    <!--
+	<div style="float:left;width:320px;margin-left: 25px;">
+        <p class="strong_gray_text" style="margin-left: 0px; margin-top:-12px;">Select background</p>
+        <ul id="select_background" style="color:white;float:left; width:280px;margin-top:-8px;" class="menu"></ul>
+    </div>
+	-->
+</div>
+
+<div id="header">
+
+    <div id="header2">
+        <div style="float:left;margin-left: 330px;">
+            <p id="header_screen_name" class="thin_gray_text" style="margin-top:14px;">...</p>
+        </div>
+        <div class="grid_numeric">
+            <p style="margin:0px;padding:0px;">
+                <img id="grid_numeric_plus" src="/articlesdesigner/media/img/numeric_+_off.png" style="cursor:pointer;" onmouseover="this.src = '/articlesdesigner/media/img/numeric_+.png';" onmouseout="this.src = '/articlesdesigner/media/img/numeric_+_off.png';" width="28">
+            </p>
+            <p style="margin:0px;padding:0px;margin-top:-5px;">
+                <img id="grid_numeric_minus" src="/articlesdesigner/media/img/numeric_minus_off.png" style="cursor:pointer;" onmouseover="this.src = '/articlesdesigner/media/img/numeric_minus.png';" onmouseout="this.src = '/articlesdesigner/media/img/numeric_minus_off.png';" width="28">
+            </p>
+        </div>
+        <div id="grid_size">
+            <p class="strong_text"> 
+                Grid size <input id="input_grid_size" class="input_text_small_styled" >                
+            </p>
+        </div>        
+        <div id="grid"><!-- vertical-align: top; -->
+            <div class="strong_text" style="line-height: 18px;display:table;float:right;">                 
+                <p class="strong_text" id="checkbox_show_grid_text" style="cursor:pointer;display:table-cell;vertical-align:middle;padding-right:6px;">Show grid </p><input id="checkbox_show_grid" type='checkbox'/><label for="checkbox_show_grid" style="margin-right:16px;"></label>
+                <p class="strong_text" id="checkbox_drag_to_grid_text" style="cursor:pointer;display:table-cell;vertical-align:middle;padding-right:6px;'">Drag to grid </p><input id="checkbox_drag_to_grid" type="checkbox"  /><label for="checkbox_drag_to_grid" style="margin-right:16px;"></label>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
+{% block content %}
+
+    <div style="width:100%;">
+        <div style="display:inline-block; width:18px;height:18px; padding:0px;margin:0px; background-image: url('/articlesdesigner/media/img/content_ruler_cross.png');"></div><div id="content_ruler_horiz" style="display:inline-block;width:97%;height:18px; background-image: url('/articlesdesigner/media/img/content_ruler_horiz.png');"></div>
+    </div>
+    <div id="content_ruler_vert" style="position:absolute; width:18px;height:1600px; margin-top:-5px; background-image: url('/articlesdesigner/media/img/content_ruler_vert.png');"></div>
+    
+    <div class="canvas" id="canvas">
+		<!--<div id="canvas_bottombar"></div>-->
+		<div id="canvas_cannot_render">
+		    <p>Cannot render board elements.<br />Errors in definition file.</p>
+		    <input id="canvas_cannot_render_open_defs" type="button" value="Open definitions">		    
+		</div>
+        <div id="canvas_overlay"></div>
+		<div id="canvas_elements"></div>
+    </div>          
+
+    <div id="dialog_resources" class="dialog_editor"  title="Library">
+        <div class="dialog_description">
+            Here you can upload images and sound files that you can later used in your articles app.
+        </div>
+		<div id="tabs_resources">
+		  <ul>
+			<li><a href="#tabs_resources-1">Images library</a></li>
+			<li><a href="#tabs_resources-2">Sounds library</a></li>
+		  </ul>
+		  <div id="tabs_resources-1">
+			 <div class="items_div" style="font-size:12px;padding:6px;" >                  
+				 <p id="resources_upload_image">           
+				 </p>                  
+				 <p>
+					<select id="resources_upload_image_list" size="26" style="width:282px;"></select>                      
+				 </p>
+			 </div>
+			 <div id="resources_upload_image_preview" class="items_div resources_list" style="padding-left:12px;overflow:hidden;">                     
+			 </div>   
+			 <!--<div id="open_dialog_crop_image" style="color:black;">Crop img</div>--> 
+			 <div style="clear: both;" >
+			 </div>
+		  </div>    
+		  <div id="tabs_resources-2">
+			 <div class="items_div" style="font-size:12px;padding:6px;" >                  
+				 <p id="resources_upload_sound">           
+				 </p>                  
+				 <p>
+					<select id="resources_upload_sound_list" size="26" style="width:282px;"></select>                      
+				 </p>
+			 </div>
+			 <div id="resources_upload_sound_preview" class="items_div resources_list"  style="padding-left:12px;overflow:hidden;">                     
+			 </div>    
+			 <div style="clear: both;" >
+			 </div>  
+		  </div>
+		</div>                 
+    </div>
+	
+    <div id="dialog_popups" class="dialog_editor" title="Popups">
+        <div class="dialog_description">
+        </div>
+        <div class="items_div popups_list">
+            <ul id="popups_list" class="menu">
+            </ul>  
+            <br />
+            <p>
+                <input id="popups_add" type="image" src="/articlesdesigner/media/img/conver_add_item.png" style="margin-top:10px;">
+            </p>
+        </div>
+        <div class="items_div popups_edit">
+            <ul id="popups_edit" class="menu">
+            </ul>       
+            <!--<ul id="popups_actions_parameters" style="z-index:1501;position: absolute;width:340px; left:310px;top:10px;background-color: #FFFFFF;" class="menu actions_parameters"></ul>-->            
+            <div id="popups_actions" class="actions" style="margin:12px;margin-top:24px;margin-bottom:30px;"> 
+                <div id="popups_actions_header">
+                    <p class="strong_black_text" style="display: inline;">Management buttons</p>
+                </div>   
+                <ul id="popups_actions_available" class="actions_available" style="z-index:1001 !important"> </ul>      
+                <ul id="popups_actions_tree" class="menu"></ul>         
+                <ul id="popups_actions_parameters" class="menu actions_parameters"></ul>
+             </div>                   
+        </div>            
+    </div>    
+	
+    
+    <div id="dialog_code_editor" class="dialog_editor" title="Code editor">
+        <!--<div class="dialog_description">
+        </div>-->
+        
+        <div>
+            <div id="code_editor_open_outline" style="position: absolute; z-index: 5000; left:0px; top: 50px; width:30px; height:60px; background-color:#ee2;cursor:pointer;">
+                 <br />
+                 Out-
+                 line
+            </div>
+
+            <div id="code_editor_panel_outline" style="float: left;width:220px;background: #ffffee; height: 480px; ">
+                 <div style="float:left;font-weight: bold;line-height: 20px;">Explorer</div> <div style="float:right;"><input id="code_editor_close_outline" type="button" value="Hide outline"></div> <br />
+                 
+                 <div style="width:100%;height: 150px;overflow-y: scroll;overflow-x: auto;">
+                    <ul id="id_explorer_panel_tree_object_tree" style="background: #ffffee;margin:0px;padding:4px;"></ul>
+                 </div>
+                 
+                 <div style="float:left;font-weight: bold;line-height: 20px;">Outline</div>
+                 <div style="width:100%;height: 280px;overflow-y: scroll;overflow-x: auto;">
+                    <ul id="id_help_panel_tree_object_tree" style="background: #ffffee;margin:0px;padding:4px;"></ul>
+                 </div>
+                 <div>
+                     
+                 </div>
+            </div>                            
+            <div id="code_editor_panel_editor" style="float: right;width: 910px;" > <!--  height:480px;"width: 930px;" -->
+                 <div id="code_editor_tabs"> <!--  style="min-height:460px;" --> 
+                      <ul>
+                        <!--<li><a href="#code_editor_tabs-1">Your code</a></li>
+                        <li><a href="#code_editor_tabs-2">Definitions</a></li>-->
+                      </ul>
+                      <!--<div id="code_editor_tabs-1">
+                          <textarea id="code_editor_code" name="code"></textarea>
+                      </div>
+                      <div id="code_editor_tabs-2">
+                          <textarea id="code_editor_program_code" name="code"></textarea>
+                      </div>-->      
+                   </div> 
+                   <div id="code_editor_console_section">
+                       <div id="code_editor_panel_noconsole">
+                            <div style="float: right">
+                                <input id="code_editor_open_console" type="button" value="Show console" title="Show console" style="width:100px;height:20px;">
+                            </div>
+                       </div>
+                       <div id="code_editor_panel_console">
+                            <div style="float: left; margin-top:10px;"><p class="strong_black_text">Console:</p></div>
+                            <div style="float: right">
+                                <p class="strong_black_text" style="">
+                                    <button id="code_editor_console_clear" title="Close console log."><!--<img src="/articlesdesigner/media/img/clear_console.png"  style="margin-top:2px;">-->Clear console</button>
+                                    <input id="code_editor_close_console" type="button" value="Hide console" title="Hide console" style="width:100px;height:20px;">
+                                </p>
+                            </div>
+                            <textarea id="code_editor_console_text" readonly></textarea><br />
+                        </div>   
+                    </div>                                   
+              </div>
+      
+           <div style="clear: both;"></div>
+        </div>
+            
+
+        <ul id="code_editor_property" class="menu" style="margin-left: 20px;margin-top:0px;">
+        </ul>                        
+    </div>        
+    
+    
+    <div id="publish_code" class="dialog_editor" title="Publish">
+        
+        Name: <input id="publish_code_name" type="text" class="publish_name" /> <br />
+        Access: <input id="publish_access_public" name="access" type="radio" class="gray" value="public" /><label for="publish_access_public" style="margin-right:80px;"><div style="margin-left:26px;">public</div></label> 
+                <input id="publish_access_private" name="access" type="radio" class="gray" value="private"  checked="checked" /><label for="publish_access_private" style="margin-right:80px;"><div style="margin-left:26px;">private</div></label><br />
+        <br />
+        <div style="position: relative;">
+            Who has access:
+            <ul id="publish_list" class="publish_list">
+                
+            </ul>
+            <!--<div class="publish_have_made_changes">
+                <p>You have made changes that need saving.</p>
+            </div>-->
+            <div class="publish_invite_somebody">
+                    <p>Invite other</p>
+                <div>
+                    <div style="float: left;width: 70%;">
+                        <input id="publish_invite_somebody_email" type="text" placeholder="Enter e-mail address">
+                    </div>
+                    <div id="publish_invite_somebody_privileges" style="float: left;width: 30%;">
+                    </div>
+                </div>
+                
+                <input id="publish_invite_btn_save" type="button" class="confirm" value="Add">
+                <!--<input id="publish_invite_btn_cancel" type="button" value="Cancel">-->
+            </div>
+            <div id="publish_section_private_disabled" class="container_disabled"></div>
+        </div>
+        <br />
+        <div id="publish_change_done" style="float:right;">
+            <input id="publish_change_btn_done" type="button" class="publish" value="Publish">
+        </div>
+    </div>
+
+ 
+<div id="messageDialog" class="dialog_editor" title=""></div>
+<div id="conceptsDialog" class="dialog_editor" title=""></div>
+{% endblock %}
+
+{% block code_editor %}
+
+{% endblock %}
+
+
+{% block emulator %} 
+<div id="emulator_back_to_lessons_list" class="emulator_btn" style="width:170px;display: none;">
+    <div class="back_text">Back</div>
+</div>      
+<div id="emulator_back_to_app_list" class="emulator_btn" style="width:170px;display: none;">
+    <div class="back_text">Back</div>
+</div>      
+<div id="emulator_back" class="emulator_btn" style="width:170px;">
+    <div class="back_text">Back</div>
+</div>   
+  
+  
+<div id="emulator_board">
+</div>
+
+
+<div id="emulator_dialog_show_image" class="dialog_editor" title="" style="margin: 0 auto;">
+    <center>
+    <img id="emulator_dialog_show_image_img" style="max-height: 100%;max-width: 100%;" />
+    </center>         
+</div>   
+
+<div id="emulator_dialog_initiate_conversation" class="dialog_editor" title="" style="margin: 0 auto;">
+    <div id="emulator_dialog_initiate_conversation_html">
+        
+    </div>
+</div>   
+
+<div id="emulator_dialog_show_popup" class="dialog_editor" title="" style="margin: 0 auto;">
+    <div id="emulator_dialog_show_popup_description">        
+    </div>
+</div> 
+
+<div id="emulator_dialog_show_alert" class="dialog_editor" title="" style="margin: 0 auto;">
+    <div id="emulator_dialog_show_alert_text">        
+    </div>
+</div> 
+
+{% endblock %}
+
+{% block administrator %}
+{% endblock %}
+

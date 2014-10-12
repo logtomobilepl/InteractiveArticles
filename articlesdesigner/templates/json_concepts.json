@@ -1,0 +1,7 @@
+{
+"concepts": [
+		{% for concept in conceptions %}
+		{"id":{{concept.id}}, "title":"{{concept.title}}", "description":"{{concept.description}}"}{% if not forloop.last %},{% endif %}
+		{% endfor %}
+     ]
+}

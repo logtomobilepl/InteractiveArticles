@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">  
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<link href='/articlesdesigner/media/css/settings.css' rel='stylesheet' type='text/css'>
+<title>Register</title>
+<script>
+    $(function(){
+        //$("#submit").submit();
+		var fields = [];
+
+	{% for field in form %}
+		{% if field.errors %}
+			fields.push('{{ field.errors }}');					
+		{% endif %}
+	{% endfor %}
+		
+	if (fields.length > 0) {
+		$("#please_fill_fields").css("display", "block");
+	}
+		
+    });
+</script>
+</head>
+<body>
+
+    <div id="goback_section">
+		<img src="/articlesdesigner/media/img/settings/arrow_blue_left.png"> <a href="/articlesdesigner/" class="blue">Go back</a>
+    </div>
+
+    
+    <div id="login">
+    
+
+        <div class="section">
+            <form method="post" action=".">
+                {% csrf_token %}
+                <p class="section_title">Register</p>
+                <p id="please_fill_fields" class="red_border" style="display:none;"><span>Please fill all fields<span></p>
+				
+                <div class="separate_space"></div>
+                <div class="input_split">
+                    <div>E-mail</div>
+                    <div><input class="required" type="text" name="email"></div>
+                </div>
+
+                <div class="separate_space"></div>
+                <div class="input_split">
+                    <div>Password</div>
+                    <div><input class="required" type="password" name="password1"></div>
+                </div>
+				
+                <div class="separate_space"></div>
+                <div class="input_split">
+                    <div style="margin-top: 5px;">Confirm password</div>
+                    <div><input class="required" type="password" name="password2"></div>
+                </div>
+				  
+               <div class="separate_space"></div>   
+               {% if next %}
+    <input type="hidden" name="next" value="{{ next }}" />
+    {% else %}
+    <input type="hidden" name="next" value="/articlesdesigner/select/app" />
+    {% endif %}   
+				<input id="submit" name="submit" type="image" src="/articlesdesigner/media/img/settings/button_register.png" /><br />
+				<div class="separate_space"></div>   
+            </form>
+        </div>        
+    
+    </div>
+    
+
+</body>
+</html>
+
+

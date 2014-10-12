@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block head %}
+{% endblock %}
+{% block menu %}
+<p>Select screen or create a new one.</p>
+{% endblock %}
+{% block content %}
+  <form action="" method="post">{% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Save" />
+  </form>
+{% endblock %}
