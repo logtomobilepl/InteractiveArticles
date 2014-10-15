@@ -29,9 +29,9 @@
                 case "textedit":
                     return "textarea";
                 break;*/
-                case "image":
-                    return "img";
-                break;
+                //case "image":
+                //    return "img";
+                //break;
                 case "button":
                     return "div";
                 break;
@@ -121,6 +121,9 @@
                             file_name : elementInfo.file_name,
                             area_image : elementInfo.area_image,
                             draggable : elementInfo.draggable,
+                            latitude : elementInfo.latitude,
+                            longitude : elementInfo.longitude,
+                            zoom : elementInfo.zoom,
                             html_content : elementInfo.html_content,
                             text : elementInfo.text,
                             name : elementInfo.name,
@@ -154,6 +157,13 @@
                         {name:elementToAdd.dataset.designName,  parameter: "text", value: elementToAdd.dataset.designText},
                     ]);
                 }
+                if (elementInfo.type == ELEMENT_TYPE_MAP) {
+                    codeEditor.generateByChangeParam([
+                        {name:elementToAdd.dataset.designName,  parameter: "latitude", value: elementToAdd.dataset.designLatitude},
+                        {name:elementToAdd.dataset.designName,  parameter: "longitude", value: elementToAdd.dataset.designLongitude},
+                        {name:elementToAdd.dataset.designName,  parameter: "zoom", value: elementToAdd.dataset.designZoom},
+                    ]);
+                }              
                 codeEditor.generateByChangeParam([
                     {name:elementToAdd.dataset.designName,  parameter: "height", value: elementToAdd.dataset.designHeight},
                     {name:elementToAdd.dataset.designName,  parameter: "width", value: elementToAdd.dataset.designWidth},
@@ -423,7 +433,7 @@
                }
             }   
         }     
-        if (styles.file_name != undefined) {            
+        /*if (styles.file_name != undefined) {            
             element.dataset.designFileName = styles.file_name;  
             if (styles.file_name == "") {                
                 element.src = DEFAULT_IMAGE;
@@ -433,7 +443,7 @@
             element.onload = function() {
                 selectElement(element,true);
             }
-        }      
+        } */     
         
         styles.draggable = parseInt(styles.draggable);
         if (!isNaN(styles.draggable)) {
@@ -453,48 +463,83 @@
             styles.latitude = parseFloat(styles.latitude);
             if (!isNaN(styles.latitude)) {
                 element.dataset.designLatitude = styles.latitude;
-                var map = mapsContainer.getMapById(element.dataset.mapId);
-                if (map) {
-                    element.dataset.designLatitude = styles.latitude;
+                var mapObj = mapsContainer.getMapById(element.dataset.mapId);
+                if (mapObj) {                    
                     var latit = parseFloat(element.dataset.designLatitude);
                     var longit = parseFloat(element.dataset.designLongitude);
                     if (!styles.drag_listener) {
-                        map.setCenter(new google.maps.LatLng(latit, longit));
-                    }
+                        mapObj.map.setCenter(new google.maps.LatLng(latit, longit));
+                        google.maps.event.trigger(mapObj.map, 'resize');
+                    } else {
+                        selectElement(element, true);
+                    }  
                 }                 
                 //selectPropertiesFor(element);
             }                         
         }
         if (styles.longitude) {
             styles.longitude = parseFloat(styles.longitude);              
-            if (!isNaN(styles.longitude)) {                  
-                var map = mapsContainer.getMapById(element.dataset.mapId);
-                if (map) {
-                   element.dataset.designLongitude = styles.longitude;
+            if (!isNaN(styles.longitude)) {
+                element.dataset.designLongitude = styles.longitude;
+                var mapObj = mapsContainer.getMapById(element.dataset.mapId);
+                if (mapObj) {
                     var latit = parseFloat(element.dataset.designLatitude);
                     var longit = parseFloat(element.dataset.designLongitude);
                     if (!styles.drag_listener) {
-                        map.setCenter(new google.maps.LatLng(latit, longit));
-                    }                
+                        mapObj.map.setCenter(new google.maps.LatLng(latit, longit));
+                        google.maps.event.trigger(mapObj.map, 'resize');
+                    }  else {
+                        selectElement(element, true);
+                    }             
                 }                 
                 //selectPropertiesFor(element);
             }        
         }      
         if (styles.zoom) {
             styles.zoom = parseInt(styles.zoom);
-            if (!isNaN(styles.zoom)) {                
-                var map = mapsContainer.getMapById(element.dataset.mapId);
-                if (map) {
-                    element.dataset.designZoom  = styles.zoom;
+            if (!isNaN(styles.zoom)) {
+                element.dataset.designZoom  = styles.zoom;            
+                var mapObj = mapsContainer.getMapById(element.dataset.mapId);
+                if (mapObj) {                                        
                     if (!styles.zoom_listener) {
-                        map.setZoom(styles.zoom);
+                        mapObj.map.setZoom(styles.zoom);
+                        google.maps.event.trigger(mapObj.map, 'resize');
                     } else {
                         selectElement(element, true);
                     }   
                 }  
                 //selectPropertiesFor(element);          
             }                 
-        }                  
+        }    
+        
+        if (styles.onclick) {
+            if (element.dataset.designType == ELEMENT_TYPE_MAP) {
+                element.dataset.designActions = styles.onclick;
+
+                /*try {
+                    var mksObj = JSON.parse(element.dataset.designActions),
+                        mapObj = mapsContainer.getMapById(element.dataset.mapId);
+                    for(var i=0; i < mksObj.length; i++) {
+                        var markO = this.addMarkerToMapId(mapObj.mapId, mksObj.lat, mksObj.lng);
+                        markO.actions = markO.actions;                   
+                    }
+                } catch(e) {}*/               
+                
+                //alert(styles.onclick);
+            }
+        }
+        /*if (styles.map_actions) {
+            element.dataset.designZoom  = styles.map_actions;            
+            var mapObj = mapsContainer.getMapById(element.dataset.mapId);
+            if (mapObj) {                                        
+                if (!styles.zoom_listener) {
+                    mapObj.map.setZoom(styles.zoom);
+                    google.maps.event.trigger(mapObj.map, 'resize');
+                } else {
+                    selectElement(element, true);
+                }   
+            }  
+        } */                       
         /*if (styles.zoom) {
             styles.zoom = parseInt(styles.zoom);
             if (!isNaN(styles.zoom)) {
@@ -594,61 +639,167 @@
                 break;
             case ELEMENT_TYPE_IMAGE:
                 if (!wasLoaded && set_default) {
-                    setStyleOfElement(element, { width: 100, height: 100, file_name: "", draggable: 1 });                             
+                    setStyleOfElement(element, { width: 100, height: 100, area_image: "" });                             
                 } 
+                element.style.backgroundColor = "#fff";
                 setResizableArea(element);
                 setContextMenu(element, {elementType:element.dataset.designType});
                 element.setAttribute('class', 'draggable_button');
-                element.style.cursor = "pointer";                
+                element.style.cursor = "pointer";
                 
                 break;
             case ELEMENT_TYPE_MAP:
-            
-               if (!wasLoaded && set_default) {
-                   setStyleOfElement(element, { width: 200, height: 200, latitude:59.32522, longitude: 18.07002, zoom: 10 });
+                var ds;
+                if (!wasLoaded && set_default) {
+                   setStyleOfElement(element, { width: 400, height: 400, latitude:59.32522, longitude: 18.07002, zoom: 10 });
                 }
-                element.dataset.designIsActions = 0;
-                element.style.cursor = "move";
-                                
-                mapsContainer.addMap(element, element.dataset.designWidth, element.dataset.designHeight)
-                                  
-                //google.maps.event.addDomListener( mapElement, 'resize', function(e){console.log( 'Resize', e)} );                                  
-                                  
-                $(element).resizable({
-                     minWidth: 50,
-                     minHeight: 50,
-                     resize: function(event, ui) {
-                        var elMap = this;
-                        var map = mapsContainer.getMapById(elMap.dataset.mapId);
-                        if (map) {
-                            google.maps.event.trigger(map, 'resize');
-                            //map
+                ds = element.dataset;         
+                ds.designIsActions = 0;
+                element.setAttribute('class', 'draggable_button');
+                element.style.cursor = "move";                
+                setContextMenu(element, {elementType:element.dataset.designType});       
+                
+                var mapObj = mapsContainer.addMap(element, ds.designWidth, ds.designHeight, ds.designLatitude, ds.designLongitude, ds.designZoom);
+                mapsContainer.setDrag(mapObj.mapId);
+               
+                /*try {
+                    var mksObj = JSON.parse(element.dataset.designActions),
+                        mapObj = mapsContainer.getMapById(mapObj.mapId);
+                    for(var i=0; i < mksObj.length; i++) {
+                        var markO = this.addMarkerToMapId(mapObj.mapId, mksObj.lat, mksObj.lng);
+                        markO.actions = markO.actions;                   
+                    }
+                } catch(e) {}*/                
+                               
+                
+                mapsContainer.addEventListener("dragstart", function(mapObj, mapId) {
+                    $(element).draggable( "destroy" );
+                });
+                mapsContainer.addEventListener("dragend", function(mapObj, mapId) {
+                    google.maps.event.trigger(mapObj.map, 'resize');
+                    var latLng = mapObj.map.getCenter();                    
+                    codeEditor.generateByChangeParam([
+                        {name:element.dataset.designName,  parameter: "latitude", value: latLng.lat()},
+                        {name:element.dataset.designName,  parameter: "longitude", value: latLng.lng()}
+                    ]);
+                    activeElement.updateElementInBase();
+                });                
+                mapsContainer.addEventListener("drag", function(mapObj, mapId) {
+                    var latLng = mapObj.map.getCenter();                                   
+                    setStyleOfElement(element, { latitude: latLng.lat(), longitude: latLng.lng(), drag_listener: true });                    
+                });
+                mapsContainer.addEventListener("zoom_changed", function(mapObj, mapId) {
+                    var zoomValue = mapObj.map.getZoom();
+                    setStyleOfElement(element, { zoom: zoomValue, zoom_listener: true });
+                    codeEditor.generateByChangeParam([
+                        {name:element.dataset.designName,  parameter: "zoom", value: zoomValue}
+                    ]);                                
+                    activeElement.updateElementInBase();
+                });
+                
+                mapsContainer.addEventListener("marker_click", function(mapObj, mapId, markerObj, markerId) {
+                    var contentString = '',
+                        infoWindow = null,
+                        listScreens = application.getScreenListByParam("name"),
+                        listPopups = popupsContainer.popupsListName(),
+                        listSounds = application.soundsList,
+                        contentString = '';
+                    
+                    contentString = '<div style="color:black;min-width:200px;"><div><strong>Options:</strong><br /></div>';
+                    if (listScreens.length > 0) {
+                        contentString += '<div>Go to board: <select id="gotoboard_'+markerId+'"><option></option>';
+                        for(var i=0; i < listScreens.length; i++) {
+                            contentString += '<option>'+listScreens[i]+'</option>';    
                         }
-                        //$(this).css();
-                        setStyleOfElement(this, { width: ui.size.width, height: ui.size.height });
-                        selectElement(this); 
-                     },
-                     stop: function(event, ui) {   
-                     }
-                });            
-            /*
-                var zoom = 13;
-                var mapOptions = { zoom: zoom,
-                                   mapTypeId: google.maps.MapTypeId.ROADMAP,
-                                   center: new google.maps.LatLng(59.32522, 18.07002) };
-                map = new google.maps.Map(element, mapOptions);                
-                var marker = new google.maps.Marker({
-                    map:map,
-                    draggable:true,
-                    animation: google.maps.Animation.DROP,
-                    position: new google.maps.LatLng(59.32522, 18.07002)
+                        contentString += '</select></div>';
+                    }
+                    if (listPopups.length > 0) {
+                        contentString += '<div>Open popup: <select id="openpopup_'+markerId+'"><option></option>';
+                        for(var i=0; i < listPopups.length; i++) {
+                            contentString += '<option>'+listPopups[i]+'</option>';    
+                        }
+                        contentString += '</select></div>';
+                    }                    
+                    if (listSounds.length > 0) {
+                        contentString += '<div>Play sound: <select id="playsound_'+markerId+'"><option></option>';
+                        for(var i=0; i < listSounds.length; i++) {
+                            contentString += '<option>'+listSounds[i]+'</option>';    
+                        }
+                        contentString += '</select></div>';
+                    }      
+                    contentString += '<div id="removemarker_'+markerId+'" style="color:blue;cursor:pointer;">Remove marker</div></div>';                    
+                    
+                    infowindow = new google.maps.InfoWindow({
+                        content: contentString
+                    });
+                    infowindow.open(mapObj.map, markerObj.marker);
+                    
+                    setTimeout(function() {
+                        
+                        $('#openpopup_'+markerObj.markerId).val(markerObj.actions.open_popup);
+                        $('#gotoboard_'+markerObj.markerId).val(markerObj.actions.go_to_board);
+                        $('#playsound_'+markerObj.markerId).val(markerObj.actions.play_sound);                        
+
+                        function updateMapActions() {
+                            element.dataset.designActions = JSON.stringify(mapsContainer.getMarkersAction(mapId));
+                            codeEditor.generateByChangeParam([{name:element.dataset.designName,  parameter: "onclick", value: element.dataset.designActions}]);
+                            activeElement.updateElementInBase();                            
+                        }
+                                                
+                        $('#openpopup_'+markerObj.markerId).change(function() {
+                            markerObj.actions.open_popup = $(this).val();
+                            updateMapActions();
+                        });                        
+                        $('#gotoboard_'+markerObj.markerId).change(function() {
+                            markerObj.actions.go_to_board = $(this).val();  
+                            updateMapActions();
+                        });                        
+                        $('#playsound_'+markerObj.markerId).change(function() {
+                            markerObj.actions.play_sound = $(this).val(); 
+                            updateMapActions(); 
+                        });                        
+                        $('#removemarker_'+markerObj.markerId).click(function() {
+                            mapsContainer.removeMarkerFromMapId(markerObj.markerId, mapId);    
+                        });
+                    }, 200);                    
+                    
+                    //if (events["open_info_window"]) {
+                    //    events["open_info_window"].call(that, maps[mapId], mapId, markerObj);
+                    //}   
                 });
-                google.maps.event.addListener(map, 'zoom_changed', function() {
-                    var zoomListener = map.getZoom();                    
-                    setStyleOfElement(element, { zoom: zoomListener, zoomListener: true });
-                });
-                setStyleOfElement(element, { width: 200, height: 200, zoom:zoom }); 
-                element.setAttribute('class', 'clickable_map'); */               
+                
+                mapsContainer.addEventListener("dblclick", function(mapObj, mapId, ev) {
+                    var markerObj = this.addMarkerToMapId(mapId, ev.latLng.lat(), ev.latLng.lng()),
+                        markerId = markerObj.markerId;
+                });                
+                                                                                                                 
+                $(element).resizable({
+                    minWidth: 50,
+                    minHeight: 50,
+                    helper: "ui-resizable-helper",            //handles: "all",
+                    start: function(event, ui) {
+                    },
+                    resize: function(event, ui) {
+                        var element = ui.element[0],
+                            size = ui.size;                        
+                        setStyleOfElement(element, { width: size.width, height: size.height });
+                        selectElement(element);
+                    },
+                    stop: function(event, ui) {
+                        var element = ui.element[0],
+                            size = ui.size,
+                            mapObj = mapsContainer.getMapById(element.dataset.mapId);
+                        if (mapObj) {
+                            google.maps.event.trigger(mapObj.map, 'resize');
+                        } 
+                        setStyleOfElement(element, { width: size.width, height: size.height });
+                        codeEditor.generateByChangeParam([                        
+                            {name:this.dataset.designName,  parameter: "height", value: size.height},
+                            {name:this.dataset.designName,  parameter: "width", value: size.width}
+                        ]);                    
+                        activeElement.updateElementInBase();
+                    }                                         
+                });                      
                 break;
             case ELEMENT_TYPE_CLICKABLE_AREA:
                 if (!wasLoaded && set_default) {
@@ -895,12 +1046,12 @@ function setResizableTextEdit(element) {
 			  start: function( event, ui) {
 			      this.dataset.designEditActions = 0;
 			      //activeElement.setActiveForElement($(this)[0]);
-			  },
+			  }, 
 			  stop: function( event, ui ) {
-				  var x = $(this).offset().left - canvas.workspaceX+20;
+				  var x = $(this).offset().left - canvas.workspaceX;
 			      var y = $(this).offset().top - canvas.workspaceY;
 			      
-			      console.log(JSON.stringify($(this).offset()));
+			      //console.log(JSON.stringify($(this).offset()));
 			      
 			      var offsetTizen = 0;
                   if (isTizen && canvas.isPortrait) {
@@ -945,8 +1096,8 @@ function setResizableTextEdit(element) {
                       activeElement.show(false);
                       revert = true;
                   } 			  
-                  
-                  console.log($(window).width()-1220);
+                   
+                  //console.log($(window).width()-1220);
                                         
 			  }
 		});

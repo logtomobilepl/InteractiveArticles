@@ -725,8 +725,8 @@ dostaje ID kodu publikacji
     function optionsImageObject(element) {
         var optionsImageObject = {
             image_id : element.dataset.designId,
-            file_name : element.dataset.designFileName,
-            draggable : element.dataset.designDraggable,
+            file_name : element.dataset.designAreaImage,
+            draggable : 1,
             x : canvas.convertPosXFromCanvasToIPad(element.dataset.designXPos), 
             y : canvas.convertPosYFromCanvasToIPad(element.dataset.designYPos), 
             screen_id : currentScreenId,
@@ -760,10 +760,14 @@ dostaje ID kodu publikacji
             y : element.dataset.designYPos, //canvas.convertPosYFromCanvasToIPad(element.dataset.designYPos),
             width : element.dataset.designWidth, //canvas.convertPosXFromCanvasToIPad(element.dataset.designWidth), 
             height : element.dataset.designHeight, //canvas.convertPosYFromCanvasToIPad(element.dataset.designHeight),             
+            lat : element.dataset.designLatitude,
+            lng : element.dataset.designLongitude,
             zoom : element.dataset.designZoom,             
             screen_id : currentScreenId,
             visible : element.dataset.designVisible,
             name : element.dataset.designName,
+            markers : "NULL", //element.dataset.designMarkers,
+            animation  : "NULL", //element.dataset.designAnimation,              
             onclick: element.dataset.designActions
         }
         return optionsMapObject;

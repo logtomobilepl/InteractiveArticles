@@ -122,7 +122,7 @@
             boardSound = "";  
             updateBoard(boardId, boardBackground, boardSound);          
         }
-        canvas.setResolution({x:720,y:720});                 
+        canvas.setResolution({x:750,y:520});                 
         canvas.setBackground(28,20, pathBoardBackground);        
 		canvas.setWorkspaceMargin(20, 8, 0, 0); //20, 20, 20, 22
         canvas.setBackground(28,20, pathBoardBackground);        
@@ -151,7 +151,7 @@
 									ACTIONS_RUN_XML, 
 									ACTIONS_SHOW_TPOPUP, 
 									//ACTIONS_ITEM_SHOW_TPOPUP,
-									ACTIONS_PLAY_MP3, ACTIONS_STOP_MP3
+									ACTIONS_PLAY_MP3//, ACTIONS_STOP_MP3
 									//ACTIONS_SHOW_IMAGE,ACTIONS_INITIATE_CONVERSATION,
 									//ACTIONS_TAKE_ITEM, ACTIONS_DROP_ITEM
 									),         

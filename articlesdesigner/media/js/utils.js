@@ -72,7 +72,7 @@ function firstElementOfArray(array) {
 }
 
 function arrayFromArrayParam(array, param) {
-    var arrayResult = new Array();
+    var arrayResult = [];
     for(var i=0; i < array.length; i++) {
         var screenObj = array[i];
         if (screenObj[param]) {
@@ -699,6 +699,42 @@ function jsRange(_from, _to) {
 function jsRangeMake(_from, _to) {
     return new jsRange(_from, _to);
 }
+
+
+(function () {
+    var mdtarg, //last label mousedown target
+        mdchecked, //checked property when mousedown fired
+        fixedLabelSelector = 'label'; //edit as you see fit
+    $(document).on('mousedown', fixedLabelSelector, function (e) {
+        //only left clicks will toggle the label
+        if (e.which !== 1) return;
+        mdtarg = this;
+        mdchecked = this.control ? this.control.checked : $(this).find('input')[0].checked;
+        //reset mdtarg after mouseup finishes bubbling; prevents bugs with
+        //incorrect mousedown-mouseup sequences e.g.
+        //down IN label, up OUT, down OUT, up IN
+        $(document).one('mouseup', function () {
+            mdtarg = null;
+        });
+    }).on('mouseup', fixedLabelSelector, function (e) {
+        if (e.which !== 1) return;
+        if (mdtarg === this) {
+            var ch = this.control || $(this).find('input')[0];
+            //the click event is supposed to fire after the mouseup so
+            //we wait until mouseup and click finish bubbling and check if it
+            //had the desired effect
+            setTimeout(function () {
+                if (mdchecked === ch.checked) {
+                    //else patch it manually
+                    ch.checked = !ch.checked;
+                    $(ch).change();
+                }
+            }, 0);
+        }
+    });
+}());
+
+
 //jsRange.prototype.create = function(_from, _to) {
 //    return new jsRange(_from, _to);
 //}

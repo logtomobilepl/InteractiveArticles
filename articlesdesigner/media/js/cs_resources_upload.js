@@ -101,18 +101,19 @@ function ResourcesUpload(name,idParent, options) {
     }
     
     this.refreshPreview = function(pathToFile) {
-        var html = '<p class="dialog_section_title">Preview</p><p id="'+this.idParent+'_preview_data" style="color:black;"></p></p>';
+        var html = '<p class="dialog_section_title">Preview</p><p id="'+this.idParent+'_preview_data" style="color:black;"></p></p>',
+            htmlPreview = "";
         var fileInfo;
         var deleteUl;
         if(pathToFile) {
             fileInfo = new FileInfo(pathToFile);
             switch(that.typeData) {
                 case RESOURCES_TYPE_IMAGES:                    
-                    html += '<img src="'+pathToFile+'" style="max-width:270px;margin-top: 12px;"> ';                    
+                    htmlPreview += '<img src="'+pathToFile+'" style="max-width:270px;margin-top: 0px;"> ';                    
                     fileInfo.sizeOfImage(this.refreshPreviewSetSizeImage);
                     break;
                 case RESOURCES_TYPE_SOUNDS: 
-                    html += '<br /><audio controls><source src="'+pathToFile+'" /></audio>';
+                    htmlPreview += '<br /><audio controls><source src="'+pathToFile+'" /></audio>';
                     break;
             }
         }                
@@ -130,10 +131,11 @@ function ResourcesUpload(name,idParent, options) {
             propertyDelete.addAction(PROPERTY_ACTION_CLICK, that.callbackRemoveFile);			
 						            
             deleteUl.appendChild(propertyDelete.getElement());
-            $("#"+this.idParent+"_preview").append("<br /><br />");
             $("#"+this.idParent+"_preview").append(deleteUl);
+            //$("#"+this.idParent+"_preview").append("");
             propertyDelete.refreshActions();            
         } 
+        $("#"+this.idParent+"_preview").append(htmlPreview);        
         $("#"+this.idParent+"_preview").corner("");
         if (pathToFile && fileInfo) { 
             $("#"+that.idParent+"_preview_data").append("<br /><strong>Filename:</strong> "+($("#"+that.idParent+"_list").val())+"<br /><strong>Extension:</strong> "+fileInfo.getExtension());

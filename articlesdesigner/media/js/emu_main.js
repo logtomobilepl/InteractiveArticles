@@ -6,7 +6,8 @@ function BrowserEmulator() {
     this.SOURCE_OPEN_CODE_EDITOR = "code_editor";
     var that = this,    
         objectsStorage = [];
-        consoleCM = null; // instance of CodeMirror
+        consoleCM = null, // instance of CodeMirror
+        mapsEmu = new MapsContainer();
         //isConsoleAuto = true;        
         
     this.dialogs = new BrowserEmulatorDialogs();    	
@@ -368,7 +369,61 @@ function BrowserEmulator() {
             objectsStorage.push(object);               
         }
         
-        if (object.type == ELEMENT_TYPE_CLICKABLE_AREA) {
+        if (object.type == ELEMENT_TYPE_MAP) {
+            var emu_div = "<div id='"+object.emuId+"'></div>";
+            
+            if (object.parent && object.parent.emuDOM) {                       
+                $(object.parent.emuDOM).append(emu_div);
+                
+                $("#"+object.emuId).css({ 
+                    "position": "absolute",
+                    //"pointer-events": "none"
+                });
+                this.setObject("option", object, {x: object.x});
+                this.setObject("option", object, {y: object.y});
+                this.setObject("option", object, {width: object.width});
+                this.setObject("option", object, {height: object.height});
+                this.setObject("option", object, {visibility: object.visible});
+                
+                var mapObj = mapsEmu.addMap($("#"+object.emuId)[0], object.width, object.height, object.latitude, object.longitude, object.zoom, {
+                    draggable: false,
+                    disableDefaultUI: true,
+                    zoomControl: false,
+                    scrollwheel: false
+                });               
+                
+                try {
+                    var objActions = JSON.parse(object.onclick),
+                        actionObj = null;
+                    for(var i=0; i < objActions.length; i++) {
+                        actionObj = objActions[i];
+                        var markerObj = mapsEmu.addMarkerToMapId(mapObj.mapId, actionObj.lat, actionObj.lng);
+                        
+                        function setMapAction(act_obj, mark) {
+                            google.maps.event.addListener(mark, 'click', function() {
+                                if (act_obj.actions.go_to_board) {
+                                    goToBoard(act_obj.actions.go_to_board);
+                                }
+                                if (act_obj.actions.play_sound) {
+                                    playMp3(act_obj.actions.play_sound);
+                                }                            
+                                if (act_obj.actions.open_popup) {
+                                    showPopup(act_obj.actions.open_popup);
+                                }                            
+                            });
+                        }
+                        setMapAction(actionObj, markerObj.marker);                         
+
+                                              
+                    }
+                    
+                } catch(e) {}
+            
+                                               
+                setObjectWithParent();
+            }
+        }
+        if (object.type == ELEMENT_TYPE_CLICKABLE_AREA || object.type == ELEMENT_TYPE_IMAGE) {
             var emu_div = "<div id='"+object.emuId+"'></div>"; 
             
             if (object.parent && object.parent.emuDOM) {                       
@@ -475,7 +530,10 @@ function BrowserEmulator() {
         }    
         if (child.type == ACTIONS_INITIATE_CONVERSATION && child.pName) {
             showConversation(child.pName);
-        }             
+        }      
+        if (child.type == ACTIONS_SHOW_TPOPUP && child.name) {
+            showPopup(child.name);
+        }                      
     }
     
     

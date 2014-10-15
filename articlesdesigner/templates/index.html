@@ -37,8 +37,8 @@
 -->
 <!-- EXTERNAL LIBS -->
 <script src="https://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
 <script src="/articlesdesigner/media/js/jquery-ui/jquery-1.9.1.js"></script>
+<script src="http://maps.google.com/maps/api/js?sensor=false" type="text/javascript"></script>
 <script src="/articlesdesigner/media/js/jquery-ui/ui/jquery-ui.js"></script>
 <script src="/articlesdesigner/media/js/object.watch/object.watch.js"></script>
 <script src="/articlesdesigner/media/js/img_area_select/scripts/jquery.imgareaselect.pack.js"></script>
@@ -51,7 +51,6 @@
 <script src="/articlesdesigner/media/js/code_mirror/lib/codemirror.js"></script>
 <script src="/articlesdesigner/media/js/code_mirror/mode/javascript/javascript.js"></script>
 <script src="/articlesdesigner/media/js/code_mirror/addon/selection/active-line.js"></script>
-
 <script src="/articlesdesigner/media/js/code_mirror/addon/fold/foldcode.js"></script>
 <script src="/articlesdesigner/media/js/code_mirror/addon/fold/foldgutter.js"></script>
 <script src="/articlesdesigner/media/js/code_mirror/addon/fold/brace-fold.js"></script>
@@ -95,6 +94,7 @@
 <script src="/articlesdesigner/media/js/cs_popups_container.js"></script>
 <script src="/articlesdesigner/media/js/cs_maps_container.js"></script>
 <script src="/articlesdesigner/media/js/cs_actions.js"></script>
+
 <script src="/articlesdesigner/media/js/cs_actions_elements.js"></script>
 <script src="/articlesdesigner/media/js/cs_color.js"></script>
 <script src="/articlesdesigner/media/js/cs_resources_upload.js"></script>
@@ -137,10 +137,30 @@ $(function() {
 </script>-->
 
 <script>
+/*
+function initialize() {
+  var myLatlng = new google.maps.LatLng(-25.363882,131.044922);
+  var mapOptions = {
+    zoom: 4,
+    center: myLatlng
+  }
+  var map = new google.maps.Map(document.getElementById('mapatry'), mapOptions);
+        google.maps.event.addListener(map, 'drag', function() {
+google.maps.event.trigger(map, 'resize');
+        });   
+  var marker = new google.maps.Marker({
+      position: myLatlng,
+      map: map,
+      title: 'Hello World!'
+  });
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+*/
   $(document).ready(function() {
     console.log("Loaded scripts.\nStart app.");
     
-    
+
     main(); // MAIN - init system
     
     // ADD ELEMENTS FROM BASE    
@@ -225,8 +245,11 @@ $(function() {
                     actions: "{{area.onclick}}",
                   }
        addElementToCanvas(area);
-
     {% endfor %}   
+    
+    {% for map in maps %}
+        console.log("m");
+    {% endfor %}      
 	
     {% for popup in tpopups %}
         popupsContainer.addPopup(true, "{{popup.id}}", "{{popup.name}}", "{{popup.title}}", "{{popup.description}}", "{{popup.onclick}}");
@@ -365,9 +388,7 @@ $(function() {
 <a name="tagProperties"></a>
 <div id="menu_properties"><p>Properties</p></div> 
 <div id="menu_properties_section">
-    <ul id="properties" class="menu">
-    </ul>
-        <ul id="actions_parameters" style="position: absolute;left:310px;top:10px;padding-left:8px;padding-right:8px;background-color: #141621;" class="menu actions_parameters"></ul>
+    <ul id="actions_parameters" style="position: absolute;left:310px;top:10px;padding-left:8px;padding-right:8px;background-color: #141621;" class="menu actions_parameters"></ul>
     <div id="actions" class="actions"> 
         <div id="actions_header">
             <p class="strong_white_text" style="display: inline;">ACTIONS</p>         
@@ -375,12 +396,24 @@ $(function() {
         <ul id="actions_available" class="actions_available" > </ul>      
         <ul id="actions_tree" class="menu"></ul>                 
     </div>
+    <ul id="properties" class="menu">
+    </ul>
 </div>
 
 <a name="tagElementList"></a>
 <a href="#tagElementList" style="text-decoration: none;"><div id="menu_elements_list"><p>Elements List</p></div></a> 
 <div id="menu_elements_list_section">
     <div id="elements_list"></div>
+</div>
+
+<a name="tagSlideBackground"></a>
+<div id="menu_slide_background"><p>Slide background</p>  </div> 
+<div id="menu_slide_background_section" >
+    <div style="float:left;width:320px;margin-left: 25px;margin-top: 25px;">
+        <p class="strong_gray_text" style="margin-left: 0px; margin-top:-12px;">Select background</p>
+        <ul id="select_background" style="color:white;float:left; width:280px;margin-top:-8px;" class="menu"></ul>
+    </div>
+</div>
 </div>
 
 <div id="menu_properties_bottom" style="width:300px;">
@@ -403,15 +436,18 @@ $(function() {
         </div>
     </div>
     <div id="header1_buttons" style="float: left;">            
-        <img src="/articlesdesigner/media/img/top_header_btn_new.png" class="top_header_icon" id="create_new_board"/>            
         <img src="/articlesdesigner/media/img/top_header_btn_library.png" class="top_header_icon" id="dialog_resources_open"/>
         <img src="/articlesdesigner/media/img/top_header_btn_popups.png" class="top_header_icon" id="dialog_popups_open"/>            
+
+        <img src="/articlesdesigner/media/img/play_btn.png" class="top_header_icon" id="dialog_code_editor_run"/>
+        <img src="/articlesdesigner/media/img/publish_btn.png" class="top_header_icon" id="publish_code_open"/>            
         
         <!--
         <img src="/articlesdesigner/media/img/editor_open.png" style="margin:14px;padding:0px;width:40px; height:40px;" class="top_header_icon" id="dialog_code_editor_open"/>            
-        -->
+        
         <img src="/articlesdesigner/media/img/emu_run.png" style="margin:14px;padding:0px;width:40px; height:40px;" class="top_header_icon" id="dialog_code_editor_run"/>   
-        <img src="https://cdn4.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/32x32/publish.png" style="margin:14px;padding:0px;width:40px; height:40px;" class="top_header_icon" id="publish_code_open"/>                  
+        <img src="https://cdn4.iconfinder.com/data/icons/pc_de_hamburg_icon_pack/32x32/publish.png" style="margin:14px;padding:0px;width:40px; height:40px;" class="top_header_icon" id="publish_code_open"/>
+        -->                  
     </div>    
     <div style="float: right;">
         <div id="logout_section">
@@ -422,41 +458,40 @@ $(function() {
         </div>                      
     </div>       
     
-    
-    <!--
-	<div style="float:left;width:320px;margin-left: 25px;">
-        <p class="strong_gray_text" style="margin-left: 0px; margin-top:-12px;">Select background</p>
-        <ul id="select_background" style="color:white;float:left; width:280px;margin-top:-8px;" class="menu"></ul>
-    </div>
-	-->
 </div>
 
 <div id="header">
 
-    <div id="header2">
-        <div style="float:left;margin-left: 330px;">
-            <p id="header_screen_name" class="thin_gray_text" style="margin-top:14px;">...</p>
+    <div id="header2" style="min-width: 1240px;">
+        <div style="float:left;width: 320px;padding-left:10px;padding-top:8px;text-align: center;">
+            <img src="/articlesdesigner/media/img/new board.png" id="create_new_board" style="cursor: pointer;" />            
         </div>
-        <div class="grid_numeric">
-            <p style="margin:0px;padding:0px;">
-                <img id="grid_numeric_plus" src="/articlesdesigner/media/img/numeric_+_off.png" style="cursor:pointer;" onmouseover="this.src = '/articlesdesigner/media/img/numeric_+.png';" onmouseout="this.src = '/articlesdesigner/media/img/numeric_+_off.png';" width="28">
-            </p>
-            <p style="margin:0px;padding:0px;margin-top:-5px;">
-                <img id="grid_numeric_minus" src="/articlesdesigner/media/img/numeric_minus_off.png" style="cursor:pointer;" onmouseover="this.src = '/articlesdesigner/media/img/numeric_minus.png';" onmouseout="this.src = '/articlesdesigner/media/img/numeric_minus_off.png';" width="28">
-            </p>
-        </div>
-        <div id="grid_size">
-            <p class="strong_text"> 
-                Grid size <input id="input_grid_size" class="input_text_small_styled" >                
-            </p>
-        </div>        
-        <div id="grid"><!-- vertical-align: top; -->
-            <div class="strong_text" style="line-height: 18px;display:table;float:right;">                 
-                <p class="strong_text" id="checkbox_show_grid_text" style="cursor:pointer;display:table-cell;vertical-align:middle;padding-right:6px;">Show grid </p><input id="checkbox_show_grid" type='checkbox'/><label for="checkbox_show_grid" style="margin-right:16px;"></label>
-                <p class="strong_text" id="checkbox_drag_to_grid_text" style="cursor:pointer;display:table-cell;vertical-align:middle;padding-right:6px;'">Drag to grid </p><input id="checkbox_drag_to_grid" type="checkbox"  /><label for="checkbox_drag_to_grid" style="margin-right:16px;"></label>
+        <div style="width: 880px;float: left;">
+            <div style="float:left;margin-left: 10px;width:420px;white-space: nowrap;overflow: hidden;">
+                <p id="header_screen_name" class="thin_gray_text" style="margin-top:14px;">...</p>
+            </div>
+            <div style="float:right;">
+                <div class="grid_numeric">
+                    <p style="margin:0px;padding:0px;">
+                        <img id="grid_numeric_plus" src="/articlesdesigner/media/img/numeric_+_off.png" style="cursor:pointer;" onmouseover="this.src = '/articlesdesigner/media/img/numeric_+.png';" onmouseout="this.src = '/articlesdesigner/media/img/numeric_+_off.png';" width="28">
+                    </p>
+                    <p style="margin:0px;padding:0px;margin-top:-5px;">
+                        <img id="grid_numeric_minus" src="/articlesdesigner/media/img/numeric_minus_off.png" style="cursor:pointer;" onmouseover="this.src = '/articlesdesigner/media/img/numeric_minus.png';" onmouseout="this.src = '/articlesdesigner/media/img/numeric_minus_off.png';" width="28">
+                    </p>
+                </div>
+                <div id="grid_size">
+                    <p class="strong_text"> 
+                        Grid size <input id="input_grid_size" class="input_text_small_styled" >                
+                    </p>
+                </div>        
+                <div id="grid"><!-- vertical-align: top; -->
+                    <div class="strong_text" style="line-height: 18px;display:table;float:right;">                 
+                        <p class="strong_text" id="checkbox_show_grid_text" style="cursor:pointer;display:table-cell;vertical-align:middle;padding-right:6px;">Show grid </p><input id="checkbox_show_grid" type='checkbox'/><label for="checkbox_show_grid" style="margin-right:16px;"></label>
+                        <p class="strong_text" id="checkbox_drag_to_grid_text" style="cursor:pointer;display:table-cell;vertical-align:middle;padding-right:6px;'">Drag to grid </p><input id="checkbox_drag_to_grid" type="checkbox"  /><label for="checkbox_drag_to_grid" style="margin-right:16px;"></label>
+                    </div>
+                </div>
             </div>
         </div>
-
     </div>
 </div>
 
@@ -492,7 +527,7 @@ $(function() {
 				 <p id="resources_upload_image">           
 				 </p>                  
 				 <p>
-					<select id="resources_upload_image_list" size="26" style="width:282px;"></select>                      
+					<select id="resources_upload_image_list" size="20" style="width:282px;"></select>                      
 				 </p>
 			 </div>
 			 <div id="resources_upload_image_preview" class="items_div resources_list" style="padding-left:12px;overflow:hidden;">                     
@@ -694,8 +729,10 @@ $(function() {
     </div>
 </div> 
 
+
 {% endblock %}
 
 {% block administrator %}
 {% endblock %}
+
 

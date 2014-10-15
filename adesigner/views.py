@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from adesigner.models import TextObject, ButtonObject, Screen, ImageObject, HtmlObject, BoardCode, Application, \
     ClickableArea, Board, ItemObject, ConversationObject, Tpopups, TextEdit, Publish, CodesPublish, \
-    PublishEmail, Settings, UserSettings
+    PublishEmail, Settings, UserSettings, MapObject, NodeObject
 from amain.views import export_app_to_xml, copy_stock_app, copy_project
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
@@ -369,6 +369,18 @@ def post(request):
         return set_user_settings(request)
     elif action == "get_user_settings":
         return get_user_settings(request)
+    elif action == "add_map_object":
+        return add_map_object(request)
+    elif action == "edit_map_object":
+        return edit_map_object(request)
+    elif action == "remove_map_object":
+        return remove_map_object(request)
+    elif action == "add_node":
+        return add_node(request)
+    elif action == "edit_node":
+        return edit_node(request)
+    elif action == "remove_node":
+        return remove_node(request)
     else:
         print 'nothing to do here'
     return HttpResponse("Are you okay ?")
@@ -398,6 +410,91 @@ def get_settings(request):
     if all_settings:
         result = all_settings[0].get_all_json()
     return HttpResponse(result)
+
+
+@csrf_exempt
+def add_node(request):
+    x = request.POST['x']
+    y = request.POST['y']
+    width = request.POST['width']
+    height = request.POST['height']
+    screen_id = request.POST['screen_id']
+    visible = request.POST['visible']
+    name = request.POST['name']
+    data = request.POST['data']
+    node_object = NodeObject.objects.create(x=x, y=y, width=width, height=height, screen_id=screen_id, visible=visible,
+                                            name=name, data=data)
+    return HttpResponse(str(node_object.id))
+
+
+@csrf_exempt
+def edit_node(request):
+    node_object = NodeObject.objects.get(id=request.POST['node_id'])
+    node_object.x = request.POST['x']
+    node_object.y = request.POST['y']
+    node_object.width = request.POST['width']
+    node_object.height = request.POST['height']
+    node_object.screen_id = request.POST['screen_id']
+    node_object.visible = request.POST['visible']
+    node_object.name = request.POST['name']
+    node_object.data = request.POST['data']
+    node_object.save()
+    return HttpResponse("OK")
+
+
+@csrf_exempt
+def remove_node(request):
+    node_object = NodeObject.objects.get(id=request.POST['node_id'])
+    node_object.delete()
+    return HttpResponse("OK")
+
+
+@csrf_exempt
+def add_map_object(request):
+    x = request.POST['x']
+    y = request.POST['y']
+    width = request.POST['width']
+    height = request.POST['height']
+    lat = request.POST['lat']
+    lng = request.POST['lng']
+    zoom = request.POST['zoom']
+    screen_id = request.POST['screen_id']
+    visible = request.POST['visible']
+    name = request.POST['name']
+    markers = request.POST['markers']
+    animation = request.POST['animation']
+    onclick = request.POST['onclick']
+    map_object = MapObject.objects.create(x=x, y=y, width=width, height=height, lat=lat, lng=lng, zoom=zoom,
+                                          screen_id=screen_id, visible=visible, name=name, markers=markers,
+                                          animation=animation, onclick=onclick)
+    return HttpResponse(str(map_object.id))
+
+
+@csrf_exempt
+def edit_map_object(request):
+    map_object = MapObject.objects.get(id=request.POST['map_id'])
+    map_object.x = request.POST['x']
+    map_object.y = request.POST['y']
+    map_object.width = request.POST['width']
+    map_object.height = request.POST['height']
+    map_object.lat = request.POST['lat']
+    map_object.lng = request.POST['lng']
+    map_object.zoom = request.POST['zoom']
+    map_object.screen_id = request.POST['screen_id']
+    map_object.visible = request.POST['visible']
+    map_object.name = request.POST['name']
+    map_object.markers = request.POST['markers']
+    map_object.animation = request.POST['animation']
+    map_object.onclick = request.POST['onclick']
+    map_object.save()
+    return HttpResponse("OK")
+
+
+@csrf_exempt
+def remove_map_object(request):
+    map_object = MapObject.objects.get(id=request.POST['map_id'])
+    map_object.delete()
+    return HttpResponse("OK")
 
 
 @csrf_exempt
@@ -949,7 +1046,7 @@ def remove_tpopup_object(tid):
 
 
 @login_required
-def edit_screen(request, sid, is_emulated_only = False):
+def edit_screen(request, sid, is_emulated_only=False):
     all_settings = Settings.objects.all()
     if all_settings:
         settings_obj = all_settings[0]
@@ -959,6 +1056,7 @@ def edit_screen(request, sid, is_emulated_only = False):
     textedits = TextEdit.objects.filter(screen_id="qweasd")
     htmls = HtmlObject.objects.filter(screen_id=sid)
     images = ImageObject.objects.filter(screen_id=sid)
+    maps = MapObject.objects.filter(screen_id="qweasd")
     board = Board.objects.get(screen_id=sid)
     boards = Board.objects.filter(screen_id="qweasd")
     items = ItemObject.objects.filter(app_id=screen.app_id)
@@ -983,11 +1081,13 @@ def edit_screen(request, sid, is_emulated_only = False):
         new_boards = Board.objects.filter(screen_id=screena.id)
         new_codes = BoardCode.objects.filter(screen_id=screena.id)
         new_buttons = ButtonObject.objects.filter(screen_id=screena.id)
+        new_maps = MapObject.objects.filter(screen_id=screena.id)
         new_texts = TextObject.objects.filter(screen_id=screena.id)
         new_textedits = TextEdit.objects.filter(screen_id=screena.id)
         textedits = list(chain(textedits, new_textedits))
         texts = list(chain(texts, new_texts))
         buttons = list(chain(buttons, new_buttons))
+        maps = list(chain(maps, new_maps))		
         boards = list(chain(boards, new_boards))
         areas = list(chain(areas, new_areas))
         codes = list(chain(codes, new_codes))

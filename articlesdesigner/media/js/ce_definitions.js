@@ -53,7 +53,14 @@ function CodeEditorDefinitions() {
                         return false;
                     }                
                 }
-            }            
+            }          
+            if (definition.objectType == ELEMENT_TYPE_MAP) {
+                if (definition.codeType == STATEMENT_CODE_TYPE_NEW_MAP) {
+                    if (!definition.variable.isCorrectVariable()) {
+                        return false;
+                    }                
+                }
+            }                 
         }
         return true;
     }
@@ -74,7 +81,8 @@ function CodeEditorDefinitions() {
                         definition.codeType == STATEMENT_CODE_TYPE_NEW_TEXTFIELD ||
                         definition.codeType == STATEMENT_CODE_TYPE_NEW_TEXTEDIT ||
                         definition.codeType == STATEMENT_CODE_TYPE_NEW_BUTTON ||
-                        definition.codeType == STATEMENT_CODE_TYPE_NEW_IMAGE) {
+                        definition.codeType == STATEMENT_CODE_TYPE_NEW_IMAGE ||
+                        definition.codeType == STATEMENT_CODE_TYPE_NEW_MAP ) {
                             if (nameElement == definition.variable) {
                                isFind = true; 
                                break;
@@ -140,13 +148,15 @@ function CodeEditorDefinitions() {
                 type == ELEMENT_TYPE_TEXT || 
                 type == ELEMENT_TYPE_TEXTEDIT ||
                 type == ELEMENT_TYPE_BUTTON ||
-                type == ELEMENT_TYPE_IMAGE) {
+                type == ELEMENT_TYPE_IMAGE ||
+                type == ELEMENT_TYPE_MAP ) {
                 
                 if (definition.codeType == STATEMENT_CODE_TYPE_NEW_CLICKABLE_AREA ||
                     definition.codeType == STATEMENT_CODE_TYPE_NEW_TEXTFIELD ||
                     definition.codeType == STATEMENT_CODE_TYPE_NEW_TEXTEDIT ||
                     definition.codeType == STATEMENT_CODE_TYPE_NEW_BUTTON || 
-                    definition.codeType == STATEMENT_CODE_TYPE_NEW_IMAGE) {
+                    definition.codeType == STATEMENT_CODE_TYPE_NEW_IMAGE ||
+                    definition.codeType == STATEMENT_CODE_TYPE_NEW_MAP ) {
                         
                     var elementCanvas = canvas.getElementForName(definition.variable);
                     
@@ -242,6 +252,22 @@ function CodeEditorDefinitions() {
                                 setStyleOfElement(element, {visible: definition.value});
                                 __localAddNewObject(element);
                             }                              
+                            if (definition.parameter == "latitude" && element.dataset.designLatitude != definition.value) {
+                                setStyleOfElement(element, {latitude: definition.value});
+                                __localAddNewObject(element);
+                            }                              
+                            if (definition.parameter == "longitude" && element.dataset.designLongitude != definition.value) {
+                                setStyleOfElement(element, {longitude: definition.value});
+                                __localAddNewObject(element);
+                            }                              
+                            if (definition.parameter == "zoom" && element.dataset.designZoom != definition.value) {
+                                setStyleOfElement(element, {zoom: definition.value});
+                                __localAddNewObject(element);
+                            }                              
+                            if (definition.parameter == "onclick" && element.dataset.designActions != definition.value) {
+                                setStyleOfElement(element, {onclick: definition.value});
+                                __localAddNewObject(element);
+                            }                              
                         }              
                     }
                 }  
@@ -306,8 +332,9 @@ function CodeEditorDefinitions() {
         var isTE = code.match(codeEditor.templates.regExpDeclarationNewTextEdit());// || code.match(codeEditor.templates.regExpEMUNewTextEdit())    
         var isBtn = code.match(codeEditor.templates.regExpDeclarationNewButton());// || code.match(codeEditor.templates.regExpEMUNewButton());    
         var isImg = code.match(codeEditor.templates.regExpDeclarationNewImage());// || code.match(codeEditor.templates.regExpEMUNewButton());    
+        var isMap = code.match(codeEditor.templates.regExpDeclarationNewMap());// || code.match(codeEditor.templates.regExpEMUNewButton());    
                                 
-        if ((isCA || isLabel || isTE || isBtn || isImg) && codeWithoutVar != code) {
+        if ((isCA || isLabel || isTE || isBtn || isImg || isMap) && codeWithoutVar != code) {
             code = codeWithoutVar.trim();
             stat = code.split(" ");
             if (stat.length > 0) {
@@ -333,7 +360,11 @@ function CodeEditorDefinitions() {
                 if (isImg) {
                     definition.codeType = STATEMENT_CODE_TYPE_NEW_IMAGE;
                     definition.objectType = ELEMENT_TYPE_IMAGE;
-                }                
+                }  
+                if (isMap) {
+                    definition.codeType = STATEMENT_CODE_TYPE_NEW_MAP;
+                    definition.objectType = ELEMENT_TYPE_MAP;
+                }                                 
             } 
         }
         return definition;

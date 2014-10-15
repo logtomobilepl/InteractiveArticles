@@ -13,7 +13,8 @@ function BrowserEmulatorDialogs() {
     this.idDialogShowAlert = "emulator_dialog_show_alert";    
     this.idDialogShowAlertText = "emulator_dialog_show_alert_text";    
      
-    var optAlert = {}; 
+    var optAlert = {},
+        actionCallback = null;
      
     this.createDialogs = function() {        
         $("#"+this.idDialogShowImage).dialog({
@@ -59,12 +60,22 @@ function BrowserEmulatorDialogs() {
             resizable: false,
             modal: true,
            // title: '<span class="title">CODE EDITOR</span>',                
-            width: 600,
-            height: 650, 
+            width: 500,
+            height: 500, 
             buttons: {
                 OK: function() { 
                     that.closeDialog(ACTIONS_SHOW_TPOPUP);  
                 },
+                "GoToBoard" : {
+                   text: "Go to board",
+                   id: that.idDialogShowPopup+"_gotoboard",
+                   click: function(){
+                       if (actionCallback && typeof actionCallback === "function") {
+                           actionCallback();
+                       }
+                       that.closeDialog(ACTIONS_SHOW_TPOPUP);                       
+                   }   
+                }                 
             },            
             close: function( event, ui ) {             
             },
@@ -119,11 +130,24 @@ function BrowserEmulatorDialogs() {
             }            
         }  
         if (type == ACTIONS_SHOW_TPOPUP) {
-             if (options && options.description) {
+             if (options) {
                 $("#"+that.idDialogShowPopup).dialog("open");
                 if (options.title) {          
-                    $("#"+that.idDialogShowPopup).dialog("option","title","<span class='title'>"+options.title+"</span>");
+                    //$("#"+that.idDialogShowPopup).dialog("option","title","<span class='title'>"+options.title+"</span>");
                 }
+                options.description = (options.description)?options.description:"";
+                if (options.onclick) {
+                    $("#"+that.idDialogShowPopup+"_gotoboard").css("display", "inline-block");
+                    actionCallback = function() {
+                        goToBoard(options.onclick);
+                    }
+                } else {
+                    $("#"+that.idDialogShowPopup+"_gotoboard").css("display", "none");
+                    actionCallback = undefined;
+                }
+                
+                //options.title = (options.title)?options.title:"";
+                //options.title = "<h1>"+options.title+"</h1>";
                 $("#"+that.idDialogShowPopupDescription).html("<div class='big_black_text'>"+options.description+"</div>");
             }            
         }   

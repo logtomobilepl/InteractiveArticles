@@ -110,9 +110,12 @@ function setSection(section) {
     $("#menu_new_item").removeClass("selected");
     $("#menu_properties").removeClass("selected");
     $("#menu_elements_list").removeClass("selected");
+    $("#menu_slide_background").removeClass("selected");
+    
     $("#menu_new_item_section").css("display","none");
     $("#menu_properties_section").css("display","none");
     $("#menu_elements_list_section").css("display","none");
+    $("#menu_slide_background_section").css("display","none");
 
     if (section == 0) {
         $("#menu_new_item").addClass("selected");
@@ -123,6 +126,9 @@ function setSection(section) {
     } else if (section == 2) {
         $("#menu_elements_list").addClass("selected");
         $("#menu_elements_list_section").css("display","block");
+    }  else if (section == 3) {
+        $("#menu_slide_background").addClass("selected");
+        $("#menu_slide_background_section").css("display","block");
     } 
 }
 
@@ -145,4 +151,10 @@ function setEventOfSection() {
 
         setSection(2);
     }); 
+    $("#menu_slide_background").click(function(){
+        var isFind = false;
+        EventsNotification.exe(SequencesSystemEvents.EVENT_CLICK_ELEMENT, {id: $(this)[0].id}, function(r){ if (r) isFind = true;}); if (!isFind) {Messages.tutorialWrong();return;}
+
+        setSection(3);
+    });    
 }

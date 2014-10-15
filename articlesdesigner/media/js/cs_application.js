@@ -226,7 +226,7 @@ function Application() {
     }          
      
     this.showScreenInfo = function() {        
-		/*
+		
         var parentParams = $("#select_background")[0];
         if (parentParams) {
             parentParams.innerHTML = "";    
@@ -249,15 +249,16 @@ function Application() {
             });
         };
         
-        //$("#app_screen_background").attr("disabled", "disabled");
+        $("#app_screen_background").attr("disabled", "disabled");
         
         if (parentParams) {
             parentParams.appendChild(propertyScreenBackground.getElement());                    
         }
         propertyScreenBackground.setValue(boardBackground);
         propertyScreenBackground.setOldValue(boardBackground);
-        propertyScreenBackground.refreshActions();            
-
+        propertyScreenBackground.refreshActions();     
+               
+        /*
         var parentAudioParams = $("#select_audio")[0];
         if (parentAudioParams) {
             parentAudioParams.innerHTML = "";    

@@ -44,7 +44,7 @@ function PublishCode() {
     
 
     var createSelectPrivileges = function(id_privileges) {
-        var selectHTML = '<select id="'+id_privileges+'"><option value="'+that.PUBLISH_CAN_COPY+'">'+optionCanCopy+'</option><option value="'+that.PUBLISH_CAN_RUN+'">'+optionCanRun+'</option></select>';
+        var selectHTML = '<select id="'+id_privileges+'" style="display:none;"><option value="'+that.PUBLISH_CAN_COPY+'" selected>'+optionCanCopy+'</option><option value="'+that.PUBLISH_CAN_RUN+'">'+optionCanRun+'</option></select>';
         return selectHTML;
     }    
     
@@ -156,7 +156,7 @@ function PublishCode() {
             id_privileges = prefixElementList+uniqueId+"_privileges",
             id_remove = prefixElementList+uniqueId+"_remove";
         var htmlSelect = createSelectPrivileges(id_privileges);
-        var templates = '<li id="'+id+'"><div style="float:left;width:300px;">'+email+'</div><div style="float:left;width:100px;">'+htmlSelect+'</div><div style="float:left;width:20px;"><span id="'+id_remove+'" style="cursor: pointer;">X</span></div></li>';
+        var templates = '<li id="'+id+'"><div style="float:left;width:360px;">'+email+'</div><div style="float:left;width:100px;">'+htmlSelect+'</div><div style="float:left;width:20px;"><span id="'+id_remove+'" style="cursor: pointer;">X</span></div></li>';
         $("#"+that.idPublishList).append(templates);                
         $("#"+id_privileges).val(sharedCode);  
         

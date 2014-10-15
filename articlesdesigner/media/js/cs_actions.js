@@ -45,7 +45,7 @@ var optionsActionsDefault = { id_actions: "temp_actions",
 							ACTIONS_RUN_XML, 
 							ACTIONS_SHOW_TPOPUP, 
 							//ACTIONS_ITEM_SHOW_TPOPUP,
-							ACTIONS_PLAY_MP3, ACTIONS_STOP_MP3
+							ACTIONS_PLAY_MP3 //, ACTIONS_STOP_MP3
 							//ACTIONS_SHOW_IMAGE,ACTIONS_INITIATE_CONVERSATION
 							/*ACTIONS_TAKE_ITEM, ACTIONS_DROP_ITEM*/),         
 					  }	
@@ -252,8 +252,8 @@ function Actions(options) {
                     //actionElement.y_pos = (objAct.y_pos)?objAct.y_pos:"";
                     //actionElement.width = (objAct.width)?objAct.width:"";
                     //actionElement.height = (objAct.height)?objAct.height:"";                    
-                    if (objAct.items) {  
-                        this.setByObject(objAct.items,actionElement);
+                    if (objAct.events) {  
+                        this.setByObject(objAct.events,actionElement);
                     }                    
                     break;
                 case ACTIONS_ITEM_SHOW_TPOPUP:
@@ -382,7 +382,7 @@ function Actions(options) {
         actionElement.uniqueId = uniqueId++;
         actionElement.container = this;
         actionParent.addChild(actionElement); 
-        this.callbackAsJSON();
+        that.callbackAsJSON();
         return actionElement;       
     }        
     
@@ -415,7 +415,7 @@ function Actions(options) {
                 
                 $("#"+addNodeId+"_edit").trigger("click");
                 
-                this.callbackAsJSON();
+                that.callbackAsJSON();
             }                                              
         }
     }
@@ -431,7 +431,7 @@ function Actions(options) {
             
             $("#"+this.idActionsTree).jstree("remove",$("#"+idNode));
             action.parent.removeChild(action);
-            this.callbackAsJSON();
+            that.callbackAsJSON();
         }
     }    
     
@@ -792,7 +792,7 @@ function Actions(options) {
     this.refreshWithCallback = function(action) {
         $("#"+nodeIdSelected)[0].title = action.getInfo();
         action.setParams(that.idActionsParameters);
-        this.callbackAsJSON();
+        that.callbackAsJSON();
     }    
 
     var actionsListElement = function(parentAction, data) {
@@ -982,14 +982,14 @@ function arrayObjectsFromArrayAction(array) {
     for(var i=0; i < array.length; i++) {
 		var object = array[i].getObject();
 		//console.log(object.type);
-		if (object.type == ACTIONS_SHOW_TPOPUP) {
+		/*if (object.type == ACTIONS_SHOW_TPOPUP) {
 			if (object.name) {
 				//console.log(">> ACTIONS_SHOW_TPOPUP");
 				arrayObjects.push(object);
 			}			
-		} else {
+		} else {*/
 			arrayObjects.push(object);
-		}
+		//}
     }
     return arrayObjects;
 }

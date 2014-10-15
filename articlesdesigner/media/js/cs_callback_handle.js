@@ -183,7 +183,7 @@
         callbackChangeValueRefresh();
     }
     function callbackChangeValueFileName(property, value) {
-        setStyleOfElement(activeElement.elementSelected, { file_name : value });
+        setStyleOfElement(activeElement.elementSelected, { area_image : value });
         codeEditor.generateByChangeParam([{name:activeElement.elementSelected.dataset.designName,  parameter: "image", value: value}]);                            
         callbackChangeValueRefresh();
     }
@@ -223,8 +223,19 @@
     }
     function callbackChangeValueZoom(property, value) {
         setStyleOfElement(activeElement.elementSelected, { zoom : value });
+        codeEditor.generateByChangeParam([{name:activeElement.elementSelected.dataset.designName,  parameter: "zoom", value: value}]);                            
         callbackChangeValueRefresh();
     }    
+    function callbackChangeValueLatitude(property, value) {
+        setStyleOfElement(activeElement.elementSelected, { latitude : value });
+        codeEditor.generateByChangeParam([{name:activeElement.elementSelected.dataset.designName,  parameter: "latitude", value: value}]);                            
+        callbackChangeValueRefresh();
+    }        
+    function callbackChangeValueLongitude(property, value) {
+        setStyleOfElement(activeElement.elementSelected, { longitude : value });
+        codeEditor.generateByChangeParam([{name:activeElement.elementSelected.dataset.designName,  parameter: "longitude", value: value}]);                            
+        callbackChangeValueRefresh();
+    }        
     function callbackChangeValueTypeScreen(property, value) {
         editorScreen.screenType = value;
         callbackChangeValueRefresh();                        

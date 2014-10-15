@@ -16,6 +16,7 @@ var STATEMENT_CODE_TYPE_NEW_TEXTFIELD = "new_textfield";
 var STATEMENT_CODE_TYPE_NEW_TEXTEDIT = "new_textedit";
 var STATEMENT_CODE_TYPE_NEW_BUTTON = "new_button";
 var STATEMENT_CODE_TYPE_NEW_IMAGE = "new_image";
+var STATEMENT_CODE_TYPE_NEW_MAP = "new_map";
 
 
 function CodeEditorStatements() {
@@ -53,6 +54,8 @@ function CodeEditorStatements() {
             return STATEMENT_CODE_TYPE_NEW_BUTTON;
         } else if (statementCode.match(codeEditor.templates.regExpDeclarationNewImage())) {
             return STATEMENT_CODE_TYPE_NEW_IMAGE;
+        } else if (statementCode.match(codeEditor.templates.regExpDeclarationNewMap())) {
+            return STATEMENT_CODE_TYPE_NEW_MAP;
         } else if (statementCode.match(codeEditor.templates.regExpDeclarationSum())) {
             return STATEMENT_CODE_TYPE_SUM;
         } else if (statementCode.match(codeEditor.templates.regExpDeclarationMinus())) {

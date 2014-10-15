@@ -1,6 +1,7 @@
 var BoardsManager = new BoardsManager();
 var canDisplayEmuView = true;
 
+
 var Editor = {
     definitions: new CodeEditorDefinitions(),    
     statements: new CodeEditorStatements(),
@@ -81,7 +82,7 @@ var Editor = {
     bindObjectTypeToElement: function(type, element) { //area, element) {
         if (element && 
             (type == ELEMENT_TYPE_CLICKABLE_AREA || type == ELEMENT_TYPE_TEXT || type == ELEMENT_TYPE_TEXTEDIT || 
-             type == ELEMENT_TYPE_BUTTON || type == ELEMENT_TYPE_IMAGE )) {           
+             type == ELEMENT_TYPE_BUTTON || type == ELEMENT_TYPE_IMAGE || type == ELEMENT_TYPE_MAP )) {           
             
             for(var i=0; i < this.editorObjects.length; i++) {
                 if (element == this.editorObjects[i].getElement()) {
@@ -113,10 +114,16 @@ var Editor = {
                 return button;
             }     
             if (type == ELEMENT_TYPE_IMAGE) {    
-                var image = new Image();
+                var image = new ImageView();
                 image.name = element.dataset.designName;
                 image.setElement(element); 
                 return image;
+            }                                             
+            if (type == ELEMENT_TYPE_MAP) {    
+                var map = new Map();
+                map.name = element.dataset.designName;
+                map.setElement(element); 
+                return map;
             }                                             
         }
         return undefined;
@@ -330,7 +337,16 @@ BoardObjectAction.prototype.addAction = function(typeAction, options, options2) 
                     if (addAction && options.key) {
                         addAction.key = options.key;
                     }                                            
-                }                                                           
+                }   
+                if (options.action == EDITOR_SHOW_POPUP) {
+                    addAction = this.actions.addActionForActionParent(ACTIONS_SHOW_TPOPUP, tempOnclick);
+                    if (addAction && options.name) {
+                        addAction.name = options.name;
+                    }
+                    if (addAction && options.key) {
+                        addAction.key = options.key;
+                    }                     
+                }                                                                          
             }               
             break;            
         case EDITOR_ONDROP:
@@ -730,7 +746,7 @@ Button.prototype = Object.create(BoardObject.prototype);
 $.extend(true, Button.prototype, BoardObjectAction.prototype);
 
 
-function Image(x, y, width, height, image, visible) {
+function ImageView(x, y, width, height, image, visible) {
     var that = this;
     this.parent = Editor.objectByIndex(Editor.indexActiveBoard);
     this.uniqueId = Editor.uniqueId++;
@@ -786,8 +802,75 @@ function Image(x, y, width, height, image, visible) {
     }     
     
 }
-Image.prototype = Object.create(BoardObject.prototype);
+ImageView.prototype = Object.create(BoardObject.prototype);
 
+
+function Map(x, y, width, height, lat, lng, zoom, visible) {
+    var that = this;
+    this.parent = Editor.objectByIndex(Editor.indexActiveBoard);
+    this.uniqueId = Editor.uniqueId++;
+    this.emuId = "emu_map"+this.uniqueId;
+    this.name = "name";
+    this.type = ELEMENT_TYPE_MAP;
+    this.x = x?(x):0;
+    this.y = y?(y):0;
+    this.width = width?(width):0;
+    this.height = height?(height):0;
+    this.latitude = lat?(lat):"";
+    this.longitude = lng?(lng):"";
+    this.zoom = zoom?(zoom):"";
+    this.visible = visible?(1):1;
+    var element = undefined;   
+
+
+    this.watch('x', function(prop, oldValue, newValue) {        
+        browserEmulator.setObject("option", that, {x:newValue});
+        return newValue;
+    });
+    this.watch('y', function(prop, oldValue, newValue) {      
+        browserEmulator.setObject("option", that, {y:newValue});                              
+        return newValue;
+    }); 
+    this.watch('width', function(prop, oldValue, newValue) {   
+        browserEmulator.setObject("option", that, {width:newValue});
+        return newValue;
+    });       
+    this.watch('height', function(prop, oldValue, newValue) {     
+        browserEmulator.setObject("option", that, {height:newValue});
+        return newValue;
+    });
+    this.watch('visible', function(prop, oldValue, newValue) {    
+        browserEmulator.setObject("option", that, {visibility:newValue});        
+        return newValue;
+    }); 
+    this.watch('latitude', function(prop, oldValue, newValue) { 
+        browserEmulator.setObject("option", this, {latitude: newValue});
+        return newValue;
+    });             
+    this.watch('longitude', function(prop, oldValue, newValue) { 
+        browserEmulator.setObject("option", this, {longitude: newValue});
+        return newValue;
+    });             
+    this.watch('zoom', function(prop, oldValue, newValue) { 
+        browserEmulator.setObject("option", this, {zoom: newValue});
+        return newValue;
+    });             
+    
+    
+    if (!Editor.blockedAddedToObjectsEditor) {
+        Editor.editorObjects.push(this);
+    }           
+    
+    this.setElement = function(elem) {
+        element = elem;         
+    }  
+     
+    this.getElement = function() {
+        return element;
+    }     
+    
+}
+Map.prototype = Object.create(BoardObject.prototype);
 
 function EditorError(message) {
     this.name = "EditorError";
@@ -994,6 +1077,7 @@ SpreadsheetExtended.prototype.average = function(startRow, endRow, startCol, end
     return (sum / countNumber);
 }
 
+
 function EmptyObject() {
     
 }
@@ -1121,7 +1205,7 @@ function hideObject(name, boardName) {
 function goToBoard(name) {
     //var boardId = application.getScreenParamByParam("id", "name", name);    
     //var background = application.getBackgroundByParam("background", "id", boardId);
-    name = name.replace(" ", "_");
+    name = name.replace(/\s/g, "_");
     
     var board = Editor.objectByName(name);
     
@@ -1155,8 +1239,8 @@ function showConversation(name) {
 function showPopup(name) {
     if (canDisplayEmuView && browserEmulator) {    
         var objectPopup = popupsContainer.popupForName(name);
-        if (objectPopup && objectPopup.description) {
-            browserEmulator.dialogs.openDialog(ACTIONS_SHOW_TPOPUP, {description: objectPopup.description, title: objectPopup.title});
+        if (objectPopup) {
+            browserEmulator.dialogs.openDialog(ACTIONS_SHOW_TPOPUP, {description: objectPopup.description, title: objectPopup.title, onclick: objectPopup.onclick});
         }
     }
 }

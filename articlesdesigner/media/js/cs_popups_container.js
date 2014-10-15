@@ -69,7 +69,7 @@ function PopupsContainer() {
         }
     }                 
                           				  						
-    var popupActions = new Actions(options);	
+    /*var popupActions = new Actions(options);	
     var onclickRoot = popupActions.getOnclick();
     onclickRoot.stringName = "BUTTONS"
     var onclickRootActions = new Array(ACTIONS_ITEM_SHOW_TPOPUP);
@@ -85,7 +85,8 @@ function PopupsContainer() {
     popupActions.showActionsAvailable(true);
     //popupActions.refresh();
     $("#"+options.id_actions).corner();
-    $("#"+options.id_actions_parameters).corner();     
+    $("#"+options.id_actions_parameters).corner();  
+    */   
    	
     var tooltipActions = ' <img src="'+pathSystem+'/media/img/icon_question.png" title="....." style="cursor: help;vertical-align:bottom;margin-left:180px;" >';
     $("#"+options.id_actions_header+" p").append(tooltipActions);
@@ -189,7 +190,12 @@ function PopupsContainer() {
             var propertyDescription = new Property("popup_edit_description","textarea","Description: ","");
             propertyDescription.setClassName(liClass);			
             propertyDescription.setTemplate(templateData.widthAll,templateData.leftWidth);
-			propertyDescription.styleRight = "width:240px;height:100px;"
+			propertyDescription.styleRight = "width:240px;height:100px;";
+            var propertyGoToBoard = new Property("popup_edit_action","select","Go to board: ","");
+            propertyGoToBoard.setOptionOfSelect( arrayWithFirstEmptyElement(application.getScreenListByParam("name")) );
+            propertyGoToBoard.setClassName(liClass);            
+            propertyGoToBoard.setTemplate(templateData.widthAll,templateData.leftWidth);
+            propertyGoToBoard.setIconTooltip(imgIconTooltip,"Set board name");			
             var propertyDelete = new Property("popup_edit_delete","image","");
             propertyDelete.setClassName(liClass);
             propertyDelete.srcImg = pathSystem+"/media/img/popups_delete.png";
@@ -197,33 +203,37 @@ function PopupsContainer() {
 			                                   
             qParentPopupsEdit[0].appendChild(propertyName.getElement());
             //qParentPopupsEdit[0].appendChild(propertyTitle.getElement());
-            qParentPopupsEdit[0].appendChild(propertyDescription.getElement());
+            qParentPopupsEdit[0].appendChild(propertyDescription.getElement("auto"));
+            qParentPopupsEdit[0].appendChild(propertyGoToBoard.getElement());
             qParentPopupsEdit[0].appendChild(propertyDelete.getElement());
             qParentPopupsEdit.append("<p class=\"horiz_line\"></p>"); 
             
             propertyName.setValue(selectedPopup.name);
             propertyTitle.setValue(selectedPopup.title);
-            propertyDescription.setValue(selectedPopup.description);
+            propertyDescription.setValue(Convert.br2nl(specialCharsToHtml(selectedPopup.description)));
+            propertyGoToBoard.setValue(selectedPopup.onclick);
 
             propertyName.callbackChangeValue = this.callbackChangePopup;
             propertyTitle.callbackChangeValue = this.callbackChangePopup;
             propertyDescription.callbackChangeValue = this.callbackChangePopup;                       
+            propertyGoToBoard.callbackChangeValue = this.callbackChangePopup;                       
             propertyDelete.addAction(PROPERTY_ACTION_CLICK, this.callbackDeletePopup);
 
             propertyName.refreshActions();        
             propertyTitle.refreshActions();        
             propertyDescription.refreshActions();                    
+            propertyGoToBoard.refreshActions();                    
             propertyDelete.refreshActions();
                                           
             // actions
-            popupActions.setByJSON(selectedPopup.onclick);
-            popupActions.showActions(true);
+            //popupActions.setByJSON(selectedPopup.onclick);
+            //popupActions.showActions(true);
             
             $("#"+this.idParentUl).css("display","block");
             $("#"+this.idAddDialog).css("display","block"); 
             
         } else {
-            popupActions.showActions(false);
+            //popupActions.showActions(false);
             $("#"+this.idParentUl).css("display","none");
             $("#"+this.idAddDialog).css("display","none"); 
         }
@@ -269,6 +279,9 @@ function PopupsContainer() {
                 that.editPopupInBase(selectedPopup);
             } else if (propertyObj.id == "popup_edit_description") {
                 selectedPopup.description = value;
+                that.editPopupInBase(selectedPopup);
+            } else if (propertyObj.id == "popup_edit_action") {
+                selectedPopup.onclick = value;
                 that.editPopupInBase(selectedPopup);
             }
         }    

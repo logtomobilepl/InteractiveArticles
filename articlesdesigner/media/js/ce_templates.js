@@ -26,7 +26,11 @@ function CodeEditorTemplates() {
     }    
     
     this.stringDeclatationNewImage = function(variableName) {
-        return "var "+variableName+" = new Image();";
+        return "var "+variableName+" = new ImageView();";
+    }    
+
+    this.stringDeclatationNewMap = function(variableName) {
+        return "var "+variableName+" = new Map();";
     }    
     
     this.stringDeclatationNewObject = function(variableName, type) {
@@ -46,6 +50,9 @@ function CodeEditorTemplates() {
             case ELEMENT_TYPE_IMAGE:
                 return that.stringDeclatationNewImage(variableName);
                 break;                
+            case ELEMENT_TYPE_MAP:
+                return that.stringDeclatationNewMap(variableName);
+                break;                
             default:
                 return that.stringDeclatationNew(variableName);
                 break;                
@@ -59,6 +66,9 @@ function CodeEditorTemplates() {
             variableParameter == "html" || variableParameter == "image" || 
             variableParameter == "background") {
             commas = "\"";
+        }
+        if (variableParameter == "onclick") {
+            commas = "'";
         }
         if (variableParameter == "text") {
             variableValue = Convert.nl2br(variableValue);
@@ -88,9 +98,13 @@ function CodeEditorTemplates() {
     }
 
     this.regExpDeclarationNewImage = function() {                
-        return new RegExp("(var)\\s*[^=]*=\\s*(new)\\s*(Image\\(\\);)", "");                
+        return new RegExp("(var)\\s*[^=]*=\\s*(new)\\s*(ImageView\\(\\);)", "");                
     }
-
+    
+    this.regExpDeclarationNewMap = function() {                
+        return new RegExp("(var)\\s*[^=]*=\\s*(new)\\s*(Map\\(\\);)", "");                
+    }
+    
     this.regExpDeclarationReturn = function() {                
         return new RegExp("(return)[^\\s]*[^;]+\\s*;", "");  
     }
@@ -154,7 +168,11 @@ function CodeEditorTemplates() {
     }
     
     this.regExpEMUNewImage = function() {                
-        return new RegExp("(EMU.)\\s*[^=]*=\\s*(new)\\s*(Image\\(\\);)", "");                
+        return new RegExp("(EMU.)\\s*[^=]*=\\s*(new)\\s*(ImageView\\(\\);)", "");                
+    }    
+    
+    this.regExpEMUNewMap = function() {                
+        return new RegExp("(EMU.)\\s*[^=]*=\\s*(new)\\s*(Map\\(\\);)", "");                
     }    
     
  

@@ -101,7 +101,7 @@ function Properties(parentId) {
         var propertyDraggable = new Property("draggable", PROPERTY_TYPE_CHECKBOX, "Draggable");
         propertyDraggable.callbackChangeValue = callbackChangeValueDraggable;        
 
-        var propertyImage = new Property("file_name", "select", "Image", " ");
+        var propertyImage = new Property("image_file", "select", "Image", " ");
         propertyImage.callbackChangeValue = callbackChangeValueFileName;        
         propertyImage.inputClass = "select_styled3";
         propertyImage.setOptionOfSelect(this.listOfImages);                
@@ -165,11 +165,22 @@ function Properties(parentId) {
         var propertyZoom = new Property("zoom", "select", "Zoom");
         propertyZoom.setNumeric(true,false);
         var zoomOptions = new Array();
-        for(var i=0; i < 20; i++) {
+        propertyZoom.inputClass = "select_styled3";
+        for(var i=0; i < 19; i++) {
             zoomOptions.push(i);
         }
         propertyZoom.setOptionOfSelect(zoomOptions,true);
         propertyZoom.callbackChangeValue = callbackChangeValueZoom;        
+
+ 
+        var propertyLatitude = new Property("latitude", "text", "Latitude");
+        propertyLatitude.callbackChangeValue = callbackChangeValueLatitude;        
+        //propertyLatitude.setNumeric(true,false);
+        
+        var propertyLongitude = new Property("longitude", "text", "Longitude");
+        propertyLongitude.callbackChangeValue = callbackChangeValueLongitude;        
+        //propertyLongitude.setNumeric(true,false);        
+
 
         var propertyDeleteElement = new Property("delete_element", "image", "");
         propertyDeleteElement.srcImg = pathSystem+"/media/img/prop_delete_element.png";
@@ -253,7 +264,9 @@ function Properties(parentId) {
                 actions.showActions(false);
                 break;
             case ELEMENT_TYPE_MAP:
-                this.addChild(propertyDeleteElement);            
+                this.addChild(propertyDeleteElement);
+                this.addChild(propertyLatitude);
+                this.addChild(propertyLongitude);
                 this.addChild(propertyZoom);
                 this.addChild(propertyXPos);
                 this.addChild(propertyYPos);
@@ -310,9 +323,12 @@ function Properties(parentId) {
             $('#font_type').val(element.dataset.designFontType);
     
             $('#title_label').val(element.dataset.designTitleLabel);
-            $('#file_name').val(element.dataset.designFileName);
+            $('#image_file').val(element.dataset.designAreaImage);
             $('#background_image').val(element.dataset.designBackgroundImage);
             $('#area_image').val(element.dataset.designAreaImage);
+
+            $('#latitude').val(parseFloat(element.dataset.designLatitude).toFixed(5));
+            $('#longitude').val(parseFloat(element.dataset.designLongitude).toFixed(5));
     
             returnCheckbox(element.dataset.designProportionalImage, "propertional_image");                
             returnCheckbox(element.dataset.designDraggable, "draggable");
@@ -517,7 +533,7 @@ function Property(id, _type, prefix, suffix) {
         return undefined;             
     }
     
-    this.getElement = function() {
+    this.getElement = function(height) {
         var property = document.createElement('li');
         property.setAttribute("class", className);
         property.id = this.id+"_parent";               
@@ -535,10 +551,8 @@ function Property(id, _type, prefix, suffix) {
         } else if(this.type == PROPERTY_TYPE_RADIO) {
             html += '<input id="' + this.id + '" name="'+this.name+'" class="'+this.inputClass+'" type="' + this.type + '" value="' + this.value + '"  style="'+this.styleRight+'"><label for="' + this.id + '"></label>';
         } else if(this.type == PROPERTY_TYPE_TEXTAREA) {
-            property.style.height = "80px";
+            property.style.height = (height)?height:"80px";
             property.style.backgroundPosition = "0px 70px";
-            //styleTagLi = "margin-";
-            
             html += '<textarea id="' + this.id + '" name="'+this.name+'" class="'+this.inputClass+'" style="'+this.styleRight+'"></textarea><br />';
         } else if(this.type == "color") {
             html += '<span id="' + this.id + '"></span>';

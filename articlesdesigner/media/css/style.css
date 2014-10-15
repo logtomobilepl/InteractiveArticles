@@ -136,7 +136,7 @@ ul.navigator_bar_elements li input[type='button'] {
     height: 30px;
 }
 
-#menu_new_item, #menu_properties, #menu_elements_list {
+#menu_new_item, #menu_properties, #menu_elements_list, #menu_slide_background {
     background-image: url("/gamedesigner/media/img/menu_item_gray.png");
     width: 318px;
     height: 48px;
@@ -150,7 +150,7 @@ ul.navigator_bar_elements li input[type='button'] {
     padding-bottom: 16px;
 }
 
-#menu_new_item p, #menu_properties p, #menu_elements_list p {
+#menu_new_item p, #menu_properties p, #menu_elements_list p, #menu_slide_background p  {
     font-family: Verdana, Helvetica;
     font-size: 10pt;
     font-weight: bold;
@@ -158,7 +158,7 @@ ul.navigator_bar_elements li input[type='button'] {
     padding-left: 15px; 
 }
 
-#menu_new_item.selected, #menu_properties.selected, #menu_elements_list.selected {
+#menu_new_item.selected, #menu_properties.selected, #menu_elements_list.selected, #menu_slide_background.selected  {
     background-image: url("/gamedesigner/media/img/menu_item_blue.png");
     width: 318px;
     height: 48px;
@@ -166,7 +166,7 @@ ul.navigator_bar_elements li input[type='button'] {
 }
 
 
-#menu_new_item:hover, #menu_properties:hover, #menu_elements_list:hover {
+#menu_new_item:hover, #menu_properties:hover, #menu_elements_list:hover, #menu_slide_background:hover {
     background-image: url("/gamedesigner/media/img/menu_item_blue.png");
     width: 318px;
     height: 48px;
@@ -763,8 +763,8 @@ html>body #conversations_sortable li { height: 1.2em; line-height: 0.8em; }
 	float: right;
 	margin-bottom: 20px;	
 	background: #dddddd;
-	min-height: 900px;
-    max-height: 1200px;
+	/*min-height: 900px;
+    max-height: 1200px;*/
 }
 
 #menu {
